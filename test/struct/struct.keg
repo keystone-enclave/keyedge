@@ -1,0 +1,14 @@
+struct tim {
+	int h;
+	int m;
+	int s;
+};
+
+struct message {
+	tim t;
+	char sender[10];
+	char content[50];
+};
+
+int print_messages(int count, message m[5]);
+

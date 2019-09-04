@@ -1,0 +1,1 @@
+int print_message(char msg[50]);
