@@ -30,6 +30,8 @@ void __wrapper_print_int(void* buffer) {
 	buf = (void *) flatcc_builder_finalize_buffer(&builder, &size);
 	uintptr_t data_section = edge_call_data_ptr();
 	memcpy((void *) data_section, buf, size);
+	free(buf);
+	flatcc_builder_clear(&builder);
 	if (edge_call_setup_ret(edge_call, (void*) data_section, 1024)) {
 		edge_call -> return_data.call_status = CALL_STATUS_BAD_PTR;
 	} else {
@@ -66,6 +68,8 @@ void __wrapper_print_string(void* buffer) {
 	buf = (void *) flatcc_builder_finalize_buffer(&builder, &size);
 	uintptr_t data_section = edge_call_data_ptr();
 	memcpy((void *) data_section, buf, size);
+	free(buf);
+	flatcc_builder_clear(&builder);
 	if (edge_call_setup_ret(edge_call, (void*) data_section, 1024)) {
 		edge_call -> return_data.call_status = CALL_STATUS_BAD_PTR;
 	} else {

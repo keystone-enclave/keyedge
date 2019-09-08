@@ -282,6 +282,8 @@ std::string emit_function_host(std::shared_ptr<function_information> f, size_t i
 	EMIT("\tbuf = (void *) flatcc_builder_finalize_buffer(&builder, &size);");
 	EMIT("\tuintptr_t data_section = edge_call_data_ptr();");
 	EMIT("\tmemcpy((void *) data_section, buf, size);"); 
+	EMIT("\tfree(buf);");
+	EMIT("\tflatcc_builder_clear(&builder);");
 	EMIT("\tif (edge_call_setup_ret(edge_call, (void*) data_section, 1024)) {");
     EMIT("\t\tedge_call -> return_data.call_status = CALL_STATUS_BAD_PTR;");
 	EMIT("\t} else {");
