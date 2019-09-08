@@ -43,7 +43,7 @@ std::string emit_serialize(const std::string& name, const std::string& serialize
 		std::shared_ptr<array_information> cast =
 			std::dynamic_pointer_cast<array_information>(type);
 		// generate a name for the variable to place array data
-		std::string data_name = std::string("__keyedge_array_data");
+		std::string data_name = std::string("__keyedge_array_data_") + std::to_string(indent);
 		// generate the suffix for the original array and the index for new variable
 		std::string suffix, index, length = "1";
 		for (size_t i = 0; i < cast -> lengths.size(); ++i) {
@@ -79,15 +79,15 @@ std::string emit_serialize(const std::string& name, const std::string& serialize
 		// serialize each member
 		for (std::shared_ptr<element_information>& member : cast -> members) {
 			EMIT("\t", (*member -> type) -> flatcc_reference(), " ",
-				"__keyedge_" + member -> name, ";");
+				std::string("__") + std::to_string(indent) + "_" + member -> name, ";");
 			APPEND(emit_serialize(name + "." + member -> name,
-				"__keyedge_" + member -> name,
+				std::string("__") + std::to_string(indent) + "_" + member -> name,
 				*member -> type, indent + 1));
 		}
 		// construct the struct
 		for (std::shared_ptr<element_information>& member : cast -> members) {
 			EMIT("\t", cast -> name, "_", member -> name,
-				"_add(&builder, ", "__keyedge_" + member -> name, ");");
+				"_add(&builder, ", std::string("__") + std::to_string(indent) + "_" + member -> name, ");");
 		}
 		EMIT("\t", serialized_name, " = ", cast -> name, "_end(&builder);");
 	} else {

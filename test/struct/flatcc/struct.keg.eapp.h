@@ -23,57 +23,57 @@ int print_messages(int count, message m[5]) {
 	}
 	message_vec_ref_t __flatcc_reference_m;
 	{
-		message_ref_t __keyedge_array_data[1 * (5)];
+		message_ref_t __keyedge_array_data_1[1 * (5)];
 		for (size_t i1 = 0; i1 < (5); ++i1) {
 			{
 				message_start(&builder);
-				tim_ref_t __keyedge_t;
+				tim_ref_t __3_t;
 				{
 					tim_start(&builder);
-					int __keyedge_h;
+					int __4_h;
 					{
-						__keyedge_h = m[i1].t.h;
+						__4_h = m[i1].t.h;
 					}
-					int __keyedge_m;
+					int __4_m;
 					{
-						__keyedge_m = m[i1].t.m;
+						__4_m = m[i1].t.m;
 					}
-					int __keyedge_s;
+					int __4_s;
 					{
-						__keyedge_s = m[i1].t.s;
+						__4_s = m[i1].t.s;
 					}
-					tim_h_add(&builder, __keyedge_h);
-					tim_m_add(&builder, __keyedge_m);
-					tim_s_add(&builder, __keyedge_s);
-					__keyedge_t = tim_end(&builder);
+					tim_h_add(&builder, __4_h);
+					tim_m_add(&builder, __4_m);
+					tim_s_add(&builder, __4_s);
+					__3_t = tim_end(&builder);
 				}
-				flatbuffers_int8_vec_ref_t __keyedge_sender;
+				flatbuffers_int8_vec_ref_t __3_sender;
 				{
-					signed char __keyedge_array_data[1 * (10)];
+					signed char __keyedge_array_data_4[1 * (10)];
 					for (size_t i4 = 0; i4 < (10); ++i4) {
 						{
-							__keyedge_array_data[i4 + (10) * (0)] = m[i1].sender[i4];
+							__keyedge_array_data_4[i4 + (10) * (0)] = m[i1].sender[i4];
 						}
 					}
-					__keyedge_sender = flatbuffers_int8_vec_create(&builder, __keyedge_array_data, 1 * (10));
+					__3_sender = flatbuffers_int8_vec_create(&builder, __keyedge_array_data_4, 1 * (10));
 				}
-				flatbuffers_int8_vec_ref_t __keyedge_content;
+				flatbuffers_int8_vec_ref_t __3_content;
 				{
-					signed char __keyedge_array_data[1 * (10)];
+					signed char __keyedge_array_data_4[1 * (10)];
 					for (size_t i4 = 0; i4 < (10); ++i4) {
 						{
-							__keyedge_array_data[i4 + (10) * (0)] = m[i1].content[i4];
+							__keyedge_array_data_4[i4 + (10) * (0)] = m[i1].content[i4];
 						}
 					}
-					__keyedge_content = flatbuffers_int8_vec_create(&builder, __keyedge_array_data, 1 * (10));
+					__3_content = flatbuffers_int8_vec_create(&builder, __keyedge_array_data_4, 1 * (10));
 				}
-				message_t_add(&builder, __keyedge_t);
-				message_sender_add(&builder, __keyedge_sender);
-				message_content_add(&builder, __keyedge_content);
-				__keyedge_array_data[i1 + (5) * (0)] = message_end(&builder);
+				message_t_add(&builder, __3_t);
+				message_sender_add(&builder, __3_sender);
+				message_content_add(&builder, __3_content);
+				__keyedge_array_data_1[i1 + (5) * (0)] = message_end(&builder);
 			}
 		}
-		__flatcc_reference_m = message_vec_create(&builder, __keyedge_array_data, 1 * (5));
+		__flatcc_reference_m = message_vec_create(&builder, __keyedge_array_data_1, 1 * (5));
 	}
 	__ocall_wrapper_print_messages_start_as_root(&builder);
 	__ocall_wrapper_print_messages_count_add(&builder, __flatcc_reference_count);
