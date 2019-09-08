@@ -32,7 +32,8 @@ int print_string(signed char msg[50]) {
 	signed char __data_0[1 * (50)];
 	for (size_t i1 = 0; i1 < (50); ++i1) {
 		__data_0[i1 + (50) * (0)] = msg[i1];
-	}	__flatcc_reference_msg = flatbuffers_int8_vec_create(&builder, __data_0, c_vec_len(__data_0));
+	}
+	__flatcc_reference_msg = flatbuffers_int8_vec_create(&builder, __data_0, c_vec_len(__data_0));
 	__ocall_wrapper_print_string_start_as_root(&builder);
 	__ocall_wrapper_print_string_msg_add(&builder, __flatcc_reference_msg);
 	__ocall_wrapper_print_string_end_as_root(&builder);
