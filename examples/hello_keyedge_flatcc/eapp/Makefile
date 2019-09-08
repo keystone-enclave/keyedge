@@ -28,6 +28,7 @@ $(EAPP): $(OBJS)
 	$(KEYEDGE_LIB_DIR)/flatcc/flatccrt.a
 	chmod -x $@
 
+
 $(OBJS): %.o: %.c
 	$(CC) $(CFLAGS) -c $<
 

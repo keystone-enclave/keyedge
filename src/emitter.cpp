@@ -86,6 +86,7 @@ std::string emit_deserialize(const std::string& name, const std::string& seriali
 			buffer << emit_indent(indent + cast -> lengths.size() - 1 - i);
 			buffer << "}";
 		}
+		buffer << "\n";
 		return buffer.str();
 	} 
 	if (typeid(*type) == typeid(struct_information)) {

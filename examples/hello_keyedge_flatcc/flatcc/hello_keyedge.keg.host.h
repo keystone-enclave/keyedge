@@ -51,7 +51,8 @@ void __wrapper_print_string(void* buffer) {
 	flatbuffers_int8_vec_t __flatcc_reference_msg = __ocall_wrapper_print_string_msg(function_reference);
 	for (size_t i1 = 0; i1 < (50); ++i1) {
 		msg[i1] = flatbuffers_int8_vec_at(__flatcc_reference_msg, i1 + (50) * (0));
-	}	int ret_val;
+	}
+	int ret_val;
 	ret_val = print_string(msg);
 	flatcc_builder_t builder;
 	flatcc_builder_init(&builder);

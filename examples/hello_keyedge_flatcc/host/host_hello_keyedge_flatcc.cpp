@@ -16,8 +16,8 @@ int main(int argc, char** argv) {
 	Keystone enclave;
 	Params params;
 
-	params.setFreeMemSize(1024*1024);
-	params.setUntrustedMem(DEFAULT_UNTRUSTED_PTR, 1024*1024);
+	params.setFreeMemSize(2 * 1024 * 1024);
+	params.setUntrustedMem(DEFAULT_UNTRUSTED_PTR, 2 * 1024 * 1024);
 
 	enclave.init(argv[1], argv[2], params);
 
@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
 	
 	printf("Running the enclave...\n");
 	fflush(stdout);
-	
+
 	enclave.run();
 
 	return 0;
