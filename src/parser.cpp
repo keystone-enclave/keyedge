@@ -4,10 +4,6 @@ std::string type_information::str(const std::string& name) const {
 	return "";
 }
 
-std::string type_information::serialized_type(const std::string &name) const {
-	return str(name);
-}
-
 std::string type_information::flatcc_prefix() const {
 	return "";
 }
@@ -29,11 +25,11 @@ std::string primitive_type_information::flatcc_prefix() const {
 }
 
 std::string primitive_type_information::flatcc_type() const {
-	return serialized_type();
+	return str();
 }
 
 std::string primitive_type_information::flatcc_reference() const {
-	return serialized_type();
+	return str();
 }
 
 std::string array_information::str(const std::string& name) const {
@@ -55,24 +51,12 @@ std::string array_information::flatcc_reference() const {
 	return flatcc_prefix() + "_ref_t";
 }
 
-std::string array_information::serialized_type(const std::string& name) const {
-	std::string name_lengths = name + "[1";
-	for (size_t i = lengths.size(); i > 0; --i)
-		name_lengths += std::string(" * (") + lengths[i - 1] + ")";
-	name_lengths += "]";
-	return (*element_type) -> flatcc_reference() + " " + name_lengths;
-}
-
 std::string struct_information::str(const std::string& name) const {
 	return this -> name + (name.empty() ? std::string() : std::string(" ") + name);
 }
 
-std::string struct_information::serialized_type(const std::string& name) const {
-	return std::string("__serialized_") + this -> name + (name.empty() ? std::string() : std::string(" ") + name);
-}
-
 std::string struct_information::flatcc_prefix() const {
-	return serialized_type(); 
+	return str(); 
 }
 
 std::string struct_information::flatcc_type() const {

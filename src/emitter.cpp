@@ -37,16 +37,18 @@ std::string emit_indent(size_t indent) {
 std::string emit_serialize(const std::string& name, const std::string& serialized_name,
 	std::shared_ptr<type_information> type, size_t indent) {
 	BEGIN_EMIT;
+	EMIT("{");
 	if (typeid(*type) == typeid(array_information)) {
 		// get the exact data type
 		std::shared_ptr<array_information> cast =
 			std::dynamic_pointer_cast<array_information>(type);
 		// generate a name for the variable to place array data
-		std::string data_name = std::string("__data_") + std::to_string(buffer.str().size());
+		std::string data_name = std::string("__keyedge_array_data");
 		// generate the suffix for the original array and the index for new variable
-		std::string suffix, index;
+		std::string suffix, index, length = "1";
 		for (size_t i = 0; i < cast -> lengths.size(); ++i) {
 			std::string var = "i" + std::to_string(indent + i);
+			length += std::string(" * (") + cast -> lengths[i] + ")";
 			index += var + " + (" + cast -> lengths[i] + ") * (";
 			suffix = std::string("[") + var + "]" + suffix;
 		}
@@ -55,24 +57,43 @@ std::string emit_serialize(const std::string& name, const std::string& serialize
 			index += ")";
 		}
 		// define the variable for array data
-		EMIT(cast -> serialized_type(data_name), ";");
+		EMIT("\t", (*cast -> element_type) -> flatcc_reference(), " ", data_name, "[", length, "]", ";");
 		// copy the values
 		for (size_t i = 0; i < cast -> lengths.size(); ++i) {
 			std::string var = "i" + std::to_string(indent + i);
-			EMIT(emit_indent(i), "for (size_t ", var, " = 0; ", var, " < (", cast -> lengths[i], "); ++", var, ") {");
+			EMIT(emit_indent(i), "\tfor (size_t ", var, " = 0; ", var, " < (", cast -> lengths[i], "); ++", var, ") {");
 		}
 		APPEND(emit_serialize(name + suffix, data_name + "[" + index + "]",
-			*cast -> element_type, indent + cast -> lengths.size()));
+			*cast -> element_type, indent + 1 + cast -> lengths.size()));
 		for (size_t i = 0; i < cast -> lengths.size(); ++i) {
-			EMIT(emit_indent(cast -> lengths.size() - 1 - i), "}");
+			EMIT(emit_indent(cast -> lengths.size() - 1 - i), "\t}");
 		}
-		EMIT(serialized_name, " = ", type -> flatcc_prefix(),
-			"_create(&builder, ", data_name, ", c_vec_len(", data_name, "));"); 
+		EMIT("\t", serialized_name, " = ", type -> flatcc_prefix(),
+			"_create(&builder, ", data_name, ", ", length, ");"); 
 	} else if (typeid(*type) == typeid(struct_information)) {
-		;
+		// get the exact data type
+		std::shared_ptr<struct_information> cast =
+			std::dynamic_pointer_cast<struct_information>(type);
+		// start the struct
+		EMIT("\t", cast -> name, "_start(&builder);");
+		// serialize each member
+		for (std::shared_ptr<element_information>& member : cast -> members) {
+			EMIT("\t", (*member -> type) -> flatcc_reference(), " ",
+				"__keyedge_" + member -> name, ";");
+			APPEND(emit_serialize(name + "." + member -> name,
+				"__keyedge_" + member -> name,
+				*member -> type, indent + 1));
+		}
+		// construct the struct
+		for (std::shared_ptr<element_information>& member : cast -> members) {
+			EMIT("\t", cast -> name, "_", member -> name,
+				"_add(&builder, ", "__keyedge_" + member -> name, ");");
+		}
+		EMIT("\t", serialized_name, " = ", cast -> name, "_end(&builder);");
 	} else {
-		EMIT(serialized_name, " = ", name, ";");
+		EMIT("\t", serialized_name, " = ", name, ";");
 	}
+	EMIT("}");
 	RETURN_EMIT;
 }
 
@@ -80,6 +101,7 @@ std::string emit_serialize(const std::string& name, const std::string& serialize
 std::string emit_deserialize(const std::string& name, const std::string& serialized_name,
 	std::shared_ptr<type_information> type, size_t indent) {
 	BEGIN_EMIT;
+	EMIT("{");
 	if (typeid(*type) == typeid(array_information)) {
 		// get the exact data type
 		std::shared_ptr<array_information> cast =
@@ -98,18 +120,27 @@ std::string emit_deserialize(const std::string& name, const std::string& seriali
 		// copy the data
 		for (size_t i = 0; i < cast -> lengths.size(); ++i) {
 			std::string var = "i" + std::to_string(indent + i);
-			EMIT(emit_indent(i), "for (size_t ", var, " = 0; ", var, " < (", cast -> lengths[i], "); ++", var, ") {");
+			EMIT(emit_indent(i), "\tfor (size_t ", var, " = 0; ", var, " < (", cast -> lengths[i], "); ++", var, ") {");
 		}
 		APPEND(emit_deserialize(name + suffix, cast -> flatcc_prefix() + "_at(" + serialized_name + ", " + index + ")",
-			*cast -> element_type, indent + cast -> lengths.size()));
+			*cast -> element_type, indent + 1 + cast -> lengths.size()));
 		for (size_t i = 0; i < cast -> lengths.size(); ++i) {
-			EMIT(emit_indent(cast -> lengths.size() - 1 - i), "}");
+			EMIT(emit_indent(cast -> lengths.size() - 1 - i), "\t}");
 		}
 	} else if (typeid(*type) == typeid(struct_information)) {
-		;
+		// get the exact data type
+		std::shared_ptr<struct_information> cast =
+			std::dynamic_pointer_cast<struct_information>(type);
+		// de-serialize each member
+		for (std::shared_ptr<element_information>& member : cast -> members) {
+			APPEND(emit_deserialize(name + "." + member -> name,
+				cast -> name + "_" + member -> name + "(" + serialized_name + ")",
+				*member -> type, indent + 1));
+		}
 	} else {
-		EMIT(name, " = ", serialized_name, ";");
+		EMIT("\t", name, " = ", serialized_name, ";");
 	}
+	EMIT("}");
 	RETURN_EMIT;
 }
 
@@ -133,11 +164,6 @@ std::string emit_struct_declaration(size_t indent) {
 			EMIT("\t", (*member -> type) -> str(member -> name), ";");
 		}
 		EMIT("} ", str -> name, ";");
-		EMIT("typedef struct {");
-		for (std::shared_ptr<element_information>& member : str -> members) {
-			EMIT("\t", (*member -> type) -> serialized_type(member -> name), ";");
-		}
-		EMIT("} __serialized_", str -> name, ";");
 	}
 	RETURN_EMIT;
 }
@@ -149,7 +175,6 @@ std::string emit_header_eapp(size_t indent) {
 	EMIT("#include <syscall.h>");
 	EMIT("#include \"ocalls_builder.h\"");
 	EMIT("#include \"ocalls_reader.h\"");
-	EMIT("#define c_vec_len(V) (sizeof(V)/sizeof((V)[0]))");
 	// struct declaration
 	APPEND(emit_struct_declaration(indent));
 	RETURN_EMIT;
@@ -161,7 +186,6 @@ std::string emit_header_host(size_t indent) {
 	EMIT("#include <edge_call.h>");
 	EMIT("#include \"ocalls_builder.h\"");
 	EMIT("#include \"ocalls_reader.h\"");
-	EMIT("#define c_vec_len(V) (sizeof(V)/sizeof((V)[0]))");
 	// struct declaration
 	APPEND(emit_struct_declaration(indent));
 	RETURN_EMIT;
@@ -191,7 +215,7 @@ std::string emit_function_eapp(std::shared_ptr<function_information> f, size_t i
 	// function index
 	EMIT(std::string("const unsigned long __function_"), f -> name, " = ", f -> index, ";");
 	// function header
-	EMIT((*f -> return_type) -> serialized_type(f -> name), emit_function_argument_list(f), " {");
+	EMIT((*f -> return_type) -> str(f -> name), emit_function_argument_list(f), " {");
 	// initiate a flatcc buffer
 	EMIT("\tflatcc_builder_t builder;");
 	EMIT("\tflatcc_builder_init(&builder);");

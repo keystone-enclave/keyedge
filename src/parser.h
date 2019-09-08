@@ -14,8 +14,6 @@
 struct type_information {
 	// build a type declaration with the name specified
 	virtual std::string str(const std::string& name = "") const;
-	// serialized verion of the type, useful only in structs and arrays
-	virtual std::string serialized_type(const std::string& name = "") const;
 	virtual std::string flatcc_prefix() const;
 	virtual std::string flatcc_type() const;
 	virtual std::string flatcc_reference() const;
@@ -54,7 +52,6 @@ struct array_information : type_information {
 	std::vector<std::string> lengths;
 	type_indicator element_type;
 	virtual std::string str(const std::string& name = "") const;
-	virtual std::string serialized_type(const std::string& name = "") const;
 	virtual std::string flatcc_prefix() const;
 	virtual std::string flatcc_type() const;
 	virtual std::string flatcc_reference() const;
@@ -74,7 +71,6 @@ struct struct_information : type_information {
 	std::string name;
 	std::vector<std::shared_ptr<element_information>> members;
 	virtual std::string str(const std::string& name = "") const;
-	virtual std::string serialized_type(const std::string& name = "") const;
 	virtual std::string flatcc_prefix() const;
 	virtual std::string flatcc_type() const;
 	virtual std::string flatcc_reference() const;
