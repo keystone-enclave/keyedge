@@ -67,6 +67,22 @@ std::string struct_information::flatcc_reference() const {
 	return flatcc_prefix() + "_ref_t";
 }
 
+std::string pointer_information::str(const std::string& name) const {
+	return (*type) -> str(std::string("*") + name);
+}
+
+std::string pointer_information::flatcc_prefix() const {
+	return (*type) -> flatcc_prefix();
+}
+
+std::string pointer_information::flatcc_type() const {
+	return (*type) -> flatcc_type();
+}
+
+std::string pointer_information::flatcc_reference() const {
+	return (*type) -> flatcc_reference();
+}
+
 std::map<std::string, std::shared_ptr<type_information>> type_lookup;
 std::vector<std::shared_ptr<type_information>> type_pool;
 std::map<std::string, std::shared_ptr<function_information>> function_lookup;

@@ -76,6 +76,15 @@ struct struct_information : type_information {
 	virtual std::string flatcc_reference() const;
 };
 
+// pointers
+struct pointer_information : type_information {
+	type_indicator type;
+	virtual std::string str(const std::string& name = "") const;
+	virtual std::string flatcc_prefix() const;
+	virtual std::string flatcc_type() const;
+	virtual std::string flatcc_reference() const;
+};
+
 // function information
 struct function_information {
 	std::string name;

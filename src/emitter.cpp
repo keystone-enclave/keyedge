@@ -90,6 +90,12 @@ std::string emit_serialize(const std::string& name, const std::string& serialize
 				"_add(&builder, ", std::string("__") + std::to_string(indent) + "_" + member -> name, ");");
 		}
 		EMIT("\t", serialized_name, " = ", cast -> name, "_end(&builder);");
+	} else if (typeid(*type) == typeid(pointer_information)) {
+		// get the exact data type
+		std::shared_ptr<pointer_information> cast =
+			std::dynamic_pointer_cast<pointer_information>(type);
+		APPEND(emit_serialize(std::string("(*") + name + ")", serialized_name,
+			*cast -> type, indent + 1));
 	} else {
 		EMIT("\t", serialized_name, " = ", name, ";");
 	}
@@ -137,6 +143,12 @@ std::string emit_deserialize(const std::string& name, const std::string& seriali
 				cast -> name + "_" + member -> name + "(" + serialized_name + ")",
 				*member -> type, indent + 1));
 		}
+	} else if (typeid(*type) == typeid(pointer_information)) {
+		// get the exact data type
+		std::shared_ptr<pointer_information> cast =
+			std::dynamic_pointer_cast<pointer_information>(type);
+		APPEND(emit_deserialize(std::string("(*") + name + ")", serialized_name,
+			*cast -> type, indent + 1));
 	} else {
 		EMIT("\t", name, " = ", serialized_name, ";");
 	}
