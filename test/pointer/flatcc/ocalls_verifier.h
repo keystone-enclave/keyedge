@@ -9,13 +9,42 @@
 #include "flatcc/flatcc_verifier.h"
 #include "flatcc/flatcc_prologue.h"
 
+static int __pointer_int_verify_table(flatcc_table_verifier_descriptor_t *td);
 static int __ocall_wrapper_print_pointer_verify_table(flatcc_table_verifier_descriptor_t *td);
+
+static int __pointer_int_verify_table(flatcc_table_verifier_descriptor_t *td)
+{
+    int ret;
+    if ((ret = flatcc_verify_field(td, 0, 1, 1) /* __is_null */)) return ret;
+    if ((ret = flatcc_verify_field(td, 1, 8, 8) /* __data */)) return ret;
+    return flatcc_verify_ok;
+}
+
+static inline int __pointer_int_verify_as_root(const void *buf, size_t bufsiz)
+{
+    return flatcc_verify_table_as_root(buf, bufsiz, __pointer_int_identifier, &__pointer_int_verify_table);
+}
+
+static inline int __pointer_int_verify_as_typed_root(const void *buf, size_t bufsiz)
+{
+    return flatcc_verify_table_as_root(buf, bufsiz, __pointer_int_type_identifier, &__pointer_int_verify_table);
+}
+
+static inline int __pointer_int_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
+{
+    return flatcc_verify_table_as_root(buf, bufsiz, fid, &__pointer_int_verify_table);
+}
+
+static inline int __pointer_int_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+{
+    return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &__pointer_int_verify_table);
+}
 
 static int __ocall_wrapper_print_pointer_verify_table(flatcc_table_verifier_descriptor_t *td)
 {
     int ret;
     if ((ret = flatcc_verify_field(td, 0, 1, 1) /* name */)) return ret;
-    if ((ret = flatcc_verify_field(td, 1, 8, 8) /* value */)) return ret;
+    if ((ret = flatcc_verify_table_field(td, 1, 0, &__pointer_int_verify_table) /* value */)) return ret;
     if ((ret = flatcc_verify_field(td, 2, 8, 8) /* __return_value */)) return ret;
     return flatcc_verify_ok;
 }

@@ -95,9 +95,16 @@ std::string emit_serialize(const std::string& name, const std::string& serialize
 		// get the exact data type
 		std::shared_ptr<pointer_information> cast =
 			std::dynamic_pointer_cast<pointer_information>(type);
+		std::string data_name = std::string("__keyedge_pointer_data_" + std::to_string(indent));
 		EMIT("\tif (", name, ") {");
-		APPEND(emit_serialize(std::string("(*") + name + ")", serialized_name,
+		EMIT("\t\t", (*cast -> type) -> str(data_name), ";");
+		APPEND(emit_serialize(std::string("(*") + name + ")", data_name,
 			*cast -> type, indent + 2));
+		EMIT("\t\t", serialized_name, " = ", cast -> flatcc_prefix(), "_create(&builder, 0, ", data_name, ");");
+		EMIT("\t} else {");
+		EMIT("\t\t", cast -> flatcc_prefix(), "_start(&builder);");
+		EMIT("\t\t", cast -> flatcc_prefix(), "___is_null_add(&builder, 1);");
+		EMIT("\t\t", serialized_name, " = ", cast -> flatcc_prefix(), "_end(&builder);");
 		EMIT("\t}");
 	} else {
 		EMIT("\t", serialized_name, " = ", name, ";");
@@ -150,12 +157,12 @@ std::string emit_deserialize(const std::string& name, const std::string& seriali
 		// get the exact data type
 		std::shared_ptr<pointer_information> cast =
 			std::dynamic_pointer_cast<pointer_information>(type);
-		EMIT("\tif (", serialized_name, ") {");
-		EMIT("\t\t", name, " = (", cast -> str(), ") malloc(sizeof(", (*cast -> type) -> str(), "));");
-		APPEND(emit_deserialize(std::string("(*") + name + ")", serialized_name,
-			*cast -> type, indent + 2));
+		EMIT("\tif (", cast -> flatcc_prefix(), "___is_null(", serialized_name, ")) {");
+		EMIT("\t\t", name, " = 0;");
 		EMIT("\t} else {");
-		EMIT("\t\tname = 0;");
+		EMIT("\t\t", name, " = (", cast -> str(), ") malloc(sizeof(", (*cast -> type) -> str(), "));");
+		APPEND(emit_deserialize(std::string("(*") + name + ")",
+			cast -> flatcc_prefix() + "___data(" + serialized_name + ")", *cast -> type, indent + 2));
 		EMIT("\t}");
 	} else {
 		EMIT("\t", name, " = ", serialized_name, ";");

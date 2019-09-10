@@ -60,7 +60,7 @@ std::string struct_information::flatcc_prefix() const {
 }
 
 std::string struct_information::flatcc_type() const {
-	return flatcc_prefix() + "_t";
+	return flatcc_prefix() + "_table_t";
 }
 
 std::string struct_information::flatcc_reference() const {
@@ -72,15 +72,15 @@ std::string pointer_information::str(const std::string& name) const {
 }
 
 std::string pointer_information::flatcc_prefix() const {
-	return (*type) -> flatcc_prefix();
+	return std::string("__pointer_") + (*type) -> str();
 }
 
 std::string pointer_information::flatcc_type() const {
-	return (*type) -> flatcc_type();
+	return flatcc_prefix() + "_table_t";
 }
 
 std::string pointer_information::flatcc_reference() const {
-	return (*type) -> flatcc_reference();
+	return flatcc_prefix() + "_ref_t";
 }
 
 std::map<std::string, std::shared_ptr<type_information>> type_lookup;

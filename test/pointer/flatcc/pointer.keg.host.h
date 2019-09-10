@@ -18,15 +18,15 @@ void __wrapper_print_pointer(void* buffer) {
 	{
 		name = __flatcc_reference_name;
 	}
-	int __flatcc_reference_value = __ocall_wrapper_print_pointer_value(function_reference);
+	__pointer_int_table_t __flatcc_reference_value = __ocall_wrapper_print_pointer_value(function_reference);
 	{
-		if (__flatcc_reference_value) {
+		if (__pointer_int___is_null(__flatcc_reference_value)) {
+			value = 0;
+		} else {
 			value = (int *) malloc(sizeof(int));
 			{
-				(*value) = __flatcc_reference_value;
+				(*value) = __pointer_int___data(__flatcc_reference_value);
 			}
-		} else {
-			name = 0;
 		}
 	}
 	int ret_val;

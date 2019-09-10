@@ -11,12 +11,18 @@ int print_pointer(signed char name, int *value) {
 	{
 		__flatcc_reference_name = name;
 	}
-	int __flatcc_reference_value;
+	__pointer_int_ref_t __flatcc_reference_value;
 	{
 		if (value) {
+			int __keyedge_pointer_data_1;
 			{
-				__flatcc_reference_value = (*value);
+				__keyedge_pointer_data_1 = (*value);
 			}
+			__flatcc_reference_value = __pointer_int_create(&builder, 0, __keyedge_pointer_data_1);
+		} else {
+			__pointer_int_start(&builder);
+			__pointer_int___is_null_add(&builder, 1);
+			__flatcc_reference_value = __pointer_int_end(&builder);
 		}
 	}
 	__ocall_wrapper_print_pointer_start_as_root(&builder);
