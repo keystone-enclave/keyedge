@@ -162,6 +162,12 @@ std::vector<token> preparse(const std::vector<raw_token>& raw_tokens) {
 type_indicator parse_type(
 	const std::vector<token>& tokens, size_t begin, size_t end,
 	std::vector<std::string> array_length) {
+	// pointer detection
+	if (tokens[end - 1].raw.token == "*") {
+		type_pool.push_back(std::shared_ptr<pointer_information>(
+			new pointer_information(parse_type(tokens, begin, end - 1, array_length))));
+		return type_indicator(type_pool.size() - 1);
+	}
 	// array detection
 	if (tokens[end - 1].raw.token == "]") {
 		std::string length;

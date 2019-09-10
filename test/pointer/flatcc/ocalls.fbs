@@ -1,0 +1,6 @@
+table __ocall_wrapper_print_pointer {
+	name:int8;
+	value:int64;
+	__return_value:int64;
+}
+

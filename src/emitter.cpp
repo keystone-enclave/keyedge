@@ -26,7 +26,8 @@ std::string emit_indent(size_t indent) {
 }
 
 // macros to help with emitting
-#define BEGIN_EMIT std::stringstream buffer
+#define BEGIN_EMIT std::stringstream buffer; \
+	if (indent >= 500) exit(1);
 #define RETURN_EMIT return buffer.str()
 #define EMIT(...) buffer << emit_indent(indent) << emit(__VA_ARGS__) << "\n";
 #define EMIT_(...) buffer << emit_indent(indent) << emit(__VA_ARGS__);
@@ -94,8 +95,10 @@ std::string emit_serialize(const std::string& name, const std::string& serialize
 		// get the exact data type
 		std::shared_ptr<pointer_information> cast =
 			std::dynamic_pointer_cast<pointer_information>(type);
+		EMIT("\tif (", name, ") {");
 		APPEND(emit_serialize(std::string("(*") + name + ")", serialized_name,
-			*cast -> type, indent + 1));
+			*cast -> type, indent + 2));
+		EMIT("\t}");
 	} else {
 		EMIT("\t", serialized_name, " = ", name, ";");
 	}
@@ -147,8 +150,13 @@ std::string emit_deserialize(const std::string& name, const std::string& seriali
 		// get the exact data type
 		std::shared_ptr<pointer_information> cast =
 			std::dynamic_pointer_cast<pointer_information>(type);
+		EMIT("\tif (", serialized_name, ") {");
+		EMIT("\t\t", name, " = (", cast -> str(), ") malloc(sizeof(", (*cast -> type) -> str(), "));");
 		APPEND(emit_deserialize(std::string("(*") + name + ")", serialized_name,
-			*cast -> type, indent + 1));
+			*cast -> type, indent + 2));
+		EMIT("\t} else {");
+		EMIT("\t\tname = 0;");
+		EMIT("\t}");
 	} else {
 		EMIT("\t", name, " = ", serialized_name, ";");
 	}
@@ -157,7 +165,7 @@ std::string emit_deserialize(const std::string& name, const std::string& seriali
 }
 
 // function argument list
-std::string emit_function_argument_list(std::shared_ptr<function_information> f) {
+std::string emit_function_argument_list(std::shared_ptr<function_information> f, size_t indent = 0) {
 	BEGIN_EMIT;
 	APPEND("(");
 	for (size_t i = 0; i < f -> arguments.size(); ++i) {
