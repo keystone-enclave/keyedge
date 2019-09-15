@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include <clang-c/Index.h>
+
 // type information
 struct type_information {
 	// build a type declaration with the name specified
@@ -110,19 +112,8 @@ extern std::vector<std::shared_ptr<struct_information>> struct_pool;
 // primitive type initialization
 void initialize_primitive_types();
 
-// preparse
-std::vector<token> preparse(const std::vector<raw_token>& raw_tokens);
-
-// parse different entities
-type_indicator parse_type(
-	const std::vector<token>& tokens, size_t begin, size_t end,
-	std::vector<std::string> array_length = std::vector<std::string>());
-std::shared_ptr<element_information> parse_element(
-	const std::vector<token>& tokens, size_t begin, size_t end,
-	std::vector<std::string> array_length = std::vector<std::string>());
-std::shared_ptr<function_information> parse_function(const std::vector<token>& tokens, size_t begin, size_t end);
-std::shared_ptr<struct_information> parse_struct(const std::vector<token>& tokens, size_t begin, size_t end);
-int parse_statement(const std::vector<token>& tokens, size_t begin, size_t end);
+// statement parse
+CXChildVisitResult parse_statement(CXCursor cursor, CXCursor parent, CXClientData client_data);
 
 #endif
 
