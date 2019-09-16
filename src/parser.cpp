@@ -214,8 +214,10 @@ CXChildVisitResult parse_statement(CXCursor cursor, CXCursor parent, CXClientDat
 		struct_pool.push_back(str);
 		type_lookup[str -> name] = str;
 	} else if (clang_getCursorKind(cursor) == CXCursor_FunctionDecl) {
-		std::shared_ptr<function_information> function = parse_function(cursor);
-		function_lookup[function -> name] = function;
+		if (clang_Location_isFromMainFile(clang_getCursorLocation(cursor))) {
+			std::shared_ptr<function_information> function = parse_function(cursor);
+			function_lookup[function -> name] = function;
+		}
 	}
 	return CXChildVisit_Continue;
 }
