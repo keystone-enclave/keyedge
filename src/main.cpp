@@ -1,4 +1,3 @@
-#include "tokenizer.h"
 #include "parser.h"
 #include "emitter.h"
 
@@ -30,16 +29,15 @@ int main(int argc, char* argv[]) {
 	clang_disposeIndex(index);
 
 	// emit output
-	std::ofstream feapp(std::string(argv[1]) + ".eapp.h");
-	std::ofstream fhost(std::string(argv[1]) + ".host.h");
-	feapp << emit_header_eapp();
-	fhost << emit_header_host();
-	for (auto& function_pair : function_lookup) {
-		feapp << emit_function_eapp(function_pair.second);
-		fhost << emit_function_host(function_pair.second);
-	}
-	feapp << emit_end_eapp();
-	fhost << emit_end_host();
+	std::ofstream fcommon("ocalls_common.h");
+	std::ofstream feapp("ocalls_eapp.h");
+	std::ofstream fhost("ocalls_host.h");
+	std::ofstream ffbs("ocalls.fbs");
+	fcommon << emit_common();
+	feapp << emit_eapp();
+	fhost << emit_host();
+	ffbs << emit_fbs();
+
 	return 0;
 }
 

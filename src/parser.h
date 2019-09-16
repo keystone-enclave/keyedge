@@ -1,7 +1,6 @@
 #ifndef __PARSER_H
 #define __PARSER_H
 
-#include "tokenizer.h"
 #include <iostream>
 #include <map>
 #include <memory>
@@ -16,6 +15,7 @@
 struct type_information {
 	// build a type declaration with the name specified
 	virtual std::string str(const std::string& name = "") const;
+	virtual std::string fbs_type() const;
 	virtual std::string flatcc_prefix() const;
 	virtual std::string flatcc_type() const;
 	virtual std::string flatcc_reference() const;
@@ -42,6 +42,7 @@ struct primitive_type_information : type_information {
 	std::string __str;
 	std::string __flatcc_type;
 	virtual std::string str(const std::string& name = "") const;
+	virtual std::string fbs_type() const;
 	virtual std::string flatcc_prefix() const;
 	virtual std::string flatcc_type() const;
 	virtual std::string flatcc_reference() const;
@@ -54,6 +55,7 @@ struct array_information : type_information {
 	std::vector<std::string> lengths;
 	type_indicator element_type;
 	virtual std::string str(const std::string& name = "") const;
+	virtual std::string fbs_type() const;
 	virtual std::string flatcc_prefix() const;
 	virtual std::string flatcc_type() const;
 	virtual std::string flatcc_reference() const;
@@ -73,6 +75,7 @@ struct struct_information : type_information {
 	std::string name;
 	std::vector<std::shared_ptr<element_information>> members;
 	virtual std::string str(const std::string& name = "") const;
+	virtual std::string fbs_type() const;
 	virtual std::string flatcc_prefix() const;
 	virtual std::string flatcc_type() const;
 	virtual std::string flatcc_reference() const;
@@ -83,6 +86,7 @@ struct pointer_information : type_information {
 	type_indicator type;
 	pointer_information(type_indicator type) : type(type) {}
 	virtual std::string str(const std::string& name = "") const;
+	virtual std::string fbs_type() const;
 	virtual std::string flatcc_prefix() const;
 	virtual std::string flatcc_type() const;
 	virtual std::string flatcc_reference() const;
@@ -94,14 +98,6 @@ struct function_information {
 	size_t index;
 	type_indicator return_type;
 	std::vector<std::shared_ptr<element_information>> arguments;
-};
-
-// preparsed token information
-struct token {
-	raw_token raw;
-	size_t parenthesis_type;	// 0 for non-parenthesis, 1 for left, 2 for right
-	size_t correspondant;		// the corresponding parenthesis, if any
-	size_t statement_end;		// the end of the current statement
 };
 
 // lookup tables

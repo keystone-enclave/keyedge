@@ -14,6 +14,10 @@ std::string type_information::str(const std::string& name) const {
 	return "";
 }
 
+std::string type_information::fbs_type() const {
+	return "";
+}
+
 std::string type_information::flatcc_prefix() const {
 	return "";
 }
@@ -28,6 +32,10 @@ std::string type_information::flatcc_reference() const {
 
 std::string primitive_type_information::str(const std::string& name) const {
 	return __str + (name.empty() ? std::string() : std::string(" ") + name);
+}
+
+std::string primitive_type_information::fbs_type() const {
+	return __flatcc_type;
 }
 
 std::string primitive_type_information::flatcc_prefix() const {
@@ -49,6 +57,10 @@ std::string array_information::str(const std::string& name) const {
 	return (*element_type) -> str(name_lengths);
 }
 
+std::string array_information::fbs_type() const {
+	return std::string("[") + (*element_type) -> fbs_type() + std::string("]");
+}
+
 std::string array_information::flatcc_prefix() const {
 	return (*element_type) -> flatcc_prefix() + "_vec";
 }
@@ -65,6 +77,10 @@ std::string struct_information::str(const std::string& name) const {
 	return this -> name + (name.empty() ? std::string() : std::string(" ") + name);
 }
 
+std::string struct_information::fbs_type() const {
+	return str();
+}
+
 std::string struct_information::flatcc_prefix() const {
 	return str(); 
 }
@@ -79,6 +95,10 @@ std::string struct_information::flatcc_reference() const {
 
 std::string pointer_information::str(const std::string& name) const {
 	return (*type) -> str(std::string("*") + name);
+}
+
+std::string pointer_information::fbs_type() const {
+	return std::string("__pointer_") + (*type) -> str();
 }
 
 std::string pointer_information::flatcc_prefix() const {

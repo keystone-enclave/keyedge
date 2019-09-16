@@ -1,28 +1,45 @@
+BIN_DIR = bin
+LIB_DIR = lib
 SRC_DIR = src
 
-CLANG_BIN_DIR = $$HOME/llvm-project/build/bin
 LIBCLANG_INCLUDE_DIR = $$HOME/llvm-project/clang/include
-LIBCLANG_LIB = $$HOME/llvm-project/build/lib
+LIBCLANG_LIB_DIR = $$HOME/llvm-project/build/lib
 
-# CC = $(CLANG_BIN_DIR)/clang++
 CC = g++
 CC_OPTION = -std=c++14 -g -Wall -I $(LIBCLANG_INCLUDE_DIR)
-LD_OPTION = -L $(LIBCLANG_LIB) -lclang -Wl,-rpath=$(LIBCLANG_LIB)
+LD_OPTION = -L $(LIBCLANG_LIB_DIR) -lclang -Wl,-rpath=$(LIBCLANG_LIB_DIR)
 
-keyedge : tokenizer.o parser.o emitter.o main.o
-	$(CC) tokenizer.o parser.o emitter.o main.o -o keyedge $(LD_OPTION)
+KEYEDGE_OBJECTS = parser.o emitter.o main.o
+KEYEDGE_LIST = $(addprefix $(BIN_DIR)/, $(KEYEDGE_OBJECTS))
 
-main.o : $(SRC_DIR)/tokenizer.h $(SRC_DIR)/parser.h $(SRC_DIR)/emitter.h $(SRC_DIR)/main.cpp
-	$(CC) $(CC_OPTION) -c $(SRC_DIR)/main.cpp -o main.o
+RISCV_CC = riscv64-unknown-linux-gnu-gcc
+FLATCC_CC_OPTION = -I$(FLATCC_DIR)/include -Wall -Werror
+FLATCC_OBJECTS = builder.o emitter.o refmap.o verifier.o
+FLATCC_LIST = $(addprefix $(LIB_DIR)/, $(FLATCC_OBJECTS))
 
-tokenizer.o : $(SRC_DIR)/tokenizer.h $(SRC_DIR)/tokenizer.cpp
-	$(CC) $(CC_OPTION) -c $(SRC_DIR)/tokenizer.cpp -o tokenizer.o
+all : directory keyedge flatcc
 
-parser.o : $(SRC_DIR)/tokenizer.h $(SRC_DIR)/parser.h $(SRC_DIR)/parser.cpp
-	$(CC) $(CC_OPTION) -c $(SRC_DIR)/parser.cpp -o parser.o
+directory :
+	mkdir -p $(BIN_DIR)
+	mkdir -p $(LIB_DIR)
+	
+keyedge : $(BIN_DIR)/keyedge
 
-emitter.o : $(SRC_DIR)/tokenizer.h $(SRC_DIR)/parser.h $(SRC_DIR)/emitter.h $(SRC_DIR)/emitter.cpp
-	$(CC) $(CC_OPTION) -c $(SRC_DIR)/emitter.cpp -o emitter.o
+$(BIN_DIR)/keyedge : $(KEYEDGE_LIST)
+	$(CC) $(KEYEDGE_LIST) -o $@ $(LD_OPTION)
+
+$(BIN_DIR)/%.o : $(SRC_DIR)/%.cpp
+	$(CC) $(CC_OPTION) -c $< -o $@
+
+flatcc : $(LIB_DIR)/flatccrt.a
+
+$(LIB_DIR)/flatccrt.a : $(FLATCC_LIST)
+	ar ru $(LIB_DIR)/flatccrt.a $(FLATCC_LIST)
+	ranlib $(LIB_DIR)/flatccrt.a
+
+$(LIB_DIR)/%.o : $(FLATCC_DIR)/src/runtime/%.c
+	$(RISCV_CC) $(FLATCC_CC_OPTION) -c $< -o $@
 
 clean :
-	rm keyedge main.o tokenizer.o parser.o emitter.o
+	rm -rf bin
+	rm -rf lib

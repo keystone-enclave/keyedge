@@ -36,7 +36,7 @@ std::string emit_indent(size_t indent) {
 
 // serialize one variable
 std::string emit_serialize(const std::string& name, const std::string& serialized_name,
-	std::shared_ptr<type_information> type, size_t indent) {
+	std::shared_ptr<type_information> type, size_t indent = 0) {
 	BEGIN_EMIT;
 	EMIT("{");
 	if (typeid(*type) == typeid(array_information)) {
@@ -115,7 +115,7 @@ std::string emit_serialize(const std::string& name, const std::string& serialize
 
 // de-serialize one variable
 std::string emit_deserialize(const std::string& name, const std::string& serialized_name,
-	std::shared_ptr<type_information> type, size_t indent) {
+	std::shared_ptr<type_information> type, size_t indent = 0) {
 	BEGIN_EMIT;
 	EMIT("{");
 	if (typeid(*type) == typeid(array_information)) {
@@ -183,7 +183,7 @@ std::string emit_function_argument_list(std::shared_ptr<function_information> f,
 	RETURN_EMIT;
 }
 
-std::string emit_struct_declaration(size_t indent) {
+std::string emit_struct_declaration(size_t indent = 0) {
 	BEGIN_EMIT;
 	for (std::shared_ptr<struct_information>& str : struct_pool) {
 		EMIT("typedef struct {");
@@ -195,41 +195,40 @@ std::string emit_struct_declaration(size_t indent) {
 	RETURN_EMIT;
 }
 
-std::string emit_header_eapp(size_t indent) {
+std::string emit_header_eapp(size_t indent = 0) {
 	BEGIN_EMIT;
 	EMIT("#include \"eapp_utils.h\"");
 	EMIT("#include \"edge_call.h\"");
 	EMIT("#include <syscall.h>");
+	EMIT("#include \"ocalls.h\"");
+	EMIT("#include \"ocalls_common.h\"");
 	EMIT("#include \"ocalls_builder.h\"");
 	EMIT("#include \"ocalls_reader.h\"");
-	// struct declaration
-	APPEND(emit_struct_declaration(indent));
 	RETURN_EMIT;
 }
 
-std::string emit_header_host(size_t indent) {
+std::string emit_header_host(size_t indent = 0) {
 	BEGIN_EMIT;
 	EMIT("#include <keystone.h>");
 	EMIT("#include <edge_call.h>");
+	EMIT("#include \"ocalls.h\"");
+	EMIT("#include \"ocalls_common.h\"");
 	EMIT("#include \"ocalls_builder.h\"");
 	EMIT("#include \"ocalls_reader.h\"");
-	// struct declaration
-	APPEND(emit_struct_declaration(indent));
 	RETURN_EMIT;
 }
 
-std::string emit_end_eapp(size_t indent) {
+std::string emit_end_eapp(size_t indent = 0) {
 	BEGIN_EMIT;
 	RETURN_EMIT;
 }
 
-std::string emit_end_host(size_t indent) {
+std::string emit_end_host(size_t indent = 0) {
 	BEGIN_EMIT;
 	// register functions
 	EMIT("void register_functions() {");
 	for (auto& function_pair : function_lookup) {
 		std::shared_ptr<function_information> f = function_pair.second;
-		EMIT("\tconst unsigned long __function_", f -> name, " = ", f -> index, ";");
 		EMIT("\tregister_call(__function_", f -> name, ", ", "__wrapper_", f -> name, ");");
 	}
 	EMIT("\treturn;");
@@ -237,10 +236,14 @@ std::string emit_end_host(size_t indent) {
 	RETURN_EMIT;
 }
 
-std::string emit_function_eapp(std::shared_ptr<function_information> f, size_t indent) {
+std::string emit_function_common(std::shared_ptr<function_information> f, size_t indent = 0) {
 	BEGIN_EMIT;
-	// function index
-	EMIT(std::string("const unsigned long __function_"), f -> name, " = ", f -> index, ";");
+	EMIT("const unsigned long __function_", f -> name, " = ", f -> index, ";");
+	RETURN_EMIT;
+}
+
+std::string emit_function_eapp(std::shared_ptr<function_information> f, size_t indent = 0) {
+	BEGIN_EMIT;
 	// function header
 	EMIT((*f -> return_type) -> str(f -> name), emit_function_argument_list(f), " {");
 	// initiate a flatcc buffer
@@ -282,7 +285,7 @@ std::string emit_function_eapp(std::shared_ptr<function_information> f, size_t i
 	RETURN_EMIT;
 }
 
-std::string emit_function_host(std::shared_ptr<function_information> f, size_t indent) {
+std::string emit_function_host(std::shared_ptr<function_information> f, size_t indent = 0) {
 	BEGIN_EMIT;
 	// give a definition of the original function
 	EMIT((*f -> return_type) -> str(f -> name), emit_function_argument_list(f), ";");
@@ -342,6 +345,53 @@ std::string emit_function_host(std::shared_ptr<function_information> f, size_t i
 	EMIT("\t}");
 	EMIT("\treturn;");
 	EMIT("}");
+	RETURN_EMIT;
+}
+
+std::string emit_function_fbs(std::shared_ptr<function_information> f, size_t indent = 0) {
+	BEGIN_EMIT;
+	EMIT("table __ocall_wrapper_", f -> name, " {");
+	for (size_t i = 0; i < f -> arguments.size(); ++i) {
+		EMIT("\t", f -> arguments[i] -> name, ":", (*f -> arguments[i] -> type) -> fbs_type(), ";");
+	}
+	EMIT("\t__return_value:", (*f -> return_type) -> fbs_type(), ";");
+	EMIT("}");
+	RETURN_EMIT;
+}
+
+std::string emit_common(size_t indent) {
+	BEGIN_EMIT;
+	for (auto& function_pair : function_lookup) {
+		APPEND(emit_function_common(function_pair.second));
+	}
+	RETURN_EMIT;
+}
+
+std::string emit_eapp(size_t indent) {
+	BEGIN_EMIT;
+	APPEND(emit_header_eapp());
+	for (auto& function_pair : function_lookup) {
+		APPEND(emit_function_eapp(function_pair.second));
+	}
+	APPEND(emit_end_eapp());
+	RETURN_EMIT;
+}
+
+std::string emit_host(size_t indent) {
+	BEGIN_EMIT;
+	APPEND(emit_header_host());
+	for (auto& function_pair : function_lookup) {
+		APPEND(emit_function_host(function_pair.second));
+	}
+	APPEND(emit_end_host());
+	RETURN_EMIT;
+}
+
+std::string emit_fbs(size_t indent) {
+	BEGIN_EMIT;
+	for (auto& function_pair : function_lookup) {
+		APPEND(emit_function_fbs(function_pair.second));
+	}
 	RETURN_EMIT;
 }
 
