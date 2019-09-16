@@ -4,7 +4,7 @@
 #include "edge_call.h"
 #include <syscall.h>
 
-signed char str[50] = "Hello Keyedge!";
+char str[50] = "Hello Keyedge!";
 
 void EAPP_ENTRY eapp_entry() {
 	int ret = print_string(str);

@@ -98,11 +98,11 @@ std::string pointer_information::str(const std::string& name) const {
 }
 
 std::string pointer_information::fbs_type() const {
-	return std::string("__pointer_") + (*type) -> str();
+	return std::string("__pointer_") + (*type) -> flatcc_prefix();
 }
 
 std::string pointer_information::flatcc_prefix() const {
-	return std::string("__pointer_") + (*type) -> str();
+	return std::string("__pointer_") + (*type) -> flatcc_prefix();
 }
 
 std::string pointer_information::flatcc_type() const {
@@ -117,6 +117,7 @@ std::map<std::string, std::shared_ptr<type_information>> type_lookup;
 std::vector<std::shared_ptr<type_information>> type_pool;
 std::map<std::string, std::shared_ptr<function_information>> function_lookup;
 std::vector<std::shared_ptr<struct_information>> struct_pool;
+std::map<std::string, std::shared_ptr<pointer_information>> pointer_lookup;
 
 bool type_indicator::operator !() const {
 	return is_null;
@@ -128,10 +129,12 @@ std::shared_ptr<type_information> type_indicator::operator *() const {
 }
 
 void initialize_primitive_types() {
-	type_lookup["int"] = std::shared_ptr<type_information>(
-		new primitive_type_information("int", "int64"));
+	type_lookup["char"] = std::shared_ptr<type_information>(
+		new primitive_type_information("char", "int8"));
 	type_lookup["signed char"] = std::shared_ptr<type_information>(
 		new primitive_type_information("signed char", "int8"));
+	type_lookup["int"] = std::shared_ptr<type_information>(
+		new primitive_type_information("int", "int64"));
 	// TODO: add more primitive types
 }
 
@@ -140,6 +143,7 @@ type_indicator parse_type(CXType type) {
 	if (type.kind == CXType_Pointer) {
 		type_pool.push_back(std::shared_ptr<pointer_information>(
 			new pointer_information(parse_type(clang_getPointeeType(type)))));
+		pointer_lookup[type_pool.back() -> fbs_type()] = std::dynamic_pointer_cast<pointer_information>(type_pool.back());
 		return type_indicator(type_pool.size() - 1);
 	}
 	// array detection

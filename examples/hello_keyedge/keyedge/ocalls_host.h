@@ -44,7 +44,7 @@ void __wrapper_print_int(void* buffer) {
 	}
 	return;
 }
-int print_string(signed char msg[50]);
+int print_string(char msg[50]);
 void __wrapper_print_string(void* buffer) {
 	struct edge_call* edge_call = (struct edge_call*) buffer;
 	uintptr_t call_args;
@@ -53,7 +53,7 @@ void __wrapper_print_string(void* buffer) {
 		edge_call -> return_data.call_status = CALL_STATUS_BAD_OFFSET;
 		return;
 	}
-	signed char msg[50];
+	char msg[50];
 	__ocall_wrapper_print_string_table_t function_reference = __ocall_wrapper_print_string_as_root((void *) call_args);
 	flatbuffers_int8_vec_t __flatcc_reference_msg = __ocall_wrapper_print_string_msg(function_reference);
 	{

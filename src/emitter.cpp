@@ -69,8 +69,14 @@ std::string emit_serialize(const std::string& name, const std::string& serialize
 		for (size_t i = 0; i < cast -> lengths.size(); ++i) {
 			EMIT(emit_indent(cast -> lengths.size() - 1 - i), "\t}");
 		}
-		EMIT("\t", serialized_name, " = ", type -> flatcc_prefix(),
-			"_create(&builder, ", data_name, ", ", length, ");"); 
+		// g++ forbids implicit conversion between "signed char *" and "char *", so cast it for flatcc
+		if ((*cast -> element_type) -> str() == "char") {
+			EMIT("\t", serialized_name, " = ", type -> flatcc_prefix(),
+				"_create(&builder, (signed char *)", data_name, ", ", length, ");"); 
+		} else {
+			EMIT("\t", serialized_name, " = ", type -> flatcc_prefix(),
+				"_create(&builder, ", data_name, ", ", length, ");"); 
+		}
 	} else if (typeid(*type) == typeid(struct_information)) {
 		// get the exact data type
 		std::shared_ptr<struct_information> cast =
@@ -183,15 +189,22 @@ std::string emit_function_argument_list(std::shared_ptr<function_information> f,
 	RETURN_EMIT;
 }
 
-std::string emit_struct_declaration(size_t indent = 0) {
+std::string emit_struct_fbs(std::shared_ptr<struct_information> str, size_t indent = 0) {
 	BEGIN_EMIT;
-	for (std::shared_ptr<struct_information>& str : struct_pool) {
-		EMIT("typedef struct {");
-		for (std::shared_ptr<element_information>& member : str -> members) {
-			EMIT("\t", (*member -> type) -> str(member -> name), ";");
-		}
-		EMIT("} ", str -> name, ";");
+	EMIT("table ", str -> fbs_type(), " {");
+	for (std::shared_ptr<element_information>& member : str -> members) {
+		EMIT("\t", member -> name, ":", (*member -> type) -> fbs_type(), ";");
 	}
+	EMIT("}");
+	RETURN_EMIT;
+}
+
+std::string emit_pointer_fbs(std::shared_ptr<pointer_information> p, size_t indent = 0) {
+	BEGIN_EMIT;
+	EMIT("table ", p -> fbs_type(), " {");
+	EMIT("\t__is_null:bool;");
+	EMIT("\t__data:", (*p -> type) -> fbs_type(), ";");
+	EMIT("}");
 	RETURN_EMIT;
 }
 
@@ -389,6 +402,12 @@ std::string emit_host(size_t indent) {
 
 std::string emit_fbs(size_t indent) {
 	BEGIN_EMIT;
+	for (auto& str : struct_pool) {
+		APPEND(emit_struct_fbs(str));
+	}
+	for (auto& pointer_pair : pointer_lookup) {
+		APPEND(emit_pointer_fbs(pointer_pair.second));
+	}
 	for (auto& function_pair : function_lookup) {
 		APPEND(emit_function_fbs(function_pair.second));
 	}

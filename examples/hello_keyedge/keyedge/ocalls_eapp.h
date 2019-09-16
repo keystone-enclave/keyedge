@@ -28,18 +28,18 @@ int print_int(int msg) {
 	}
 	return __return_value;
 }
-int print_string(signed char msg[50]) {
+int print_string(char msg[50]) {
 	flatcc_builder_t builder;
 	flatcc_builder_init(&builder);
 	flatbuffers_int8_vec_ref_t __flatcc_reference_msg;
 	{
-		signed char __keyedge_array_data_1[1 * (50)];
+		char __keyedge_array_data_1[1 * (50)];
 		for (size_t i1 = 0; i1 < (50); ++i1) {
 			{
 				__keyedge_array_data_1[i1 + (50) * (0)] = msg[i1];
 			}
 		}
-		__flatcc_reference_msg = flatbuffers_int8_vec_create(&builder, __keyedge_array_data_1, 1 * (50));
+		__flatcc_reference_msg = flatbuffers_int8_vec_create(&builder, (signed char *)__keyedge_array_data_1, 1 * (50));
 	}
 	__ocall_wrapper_print_string_start_as_root(&builder);
 	__ocall_wrapper_print_string_msg_add(&builder, __flatcc_reference_msg);
