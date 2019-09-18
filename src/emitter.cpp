@@ -87,12 +87,30 @@ std::string emit_serialize(const std::string& name, const std::string& serialize
 		// start the struct
 		EMIT("\t", cast -> name, "_start(&builder);");
 		// serialize each member
+		std::queue<std::string> sizes;
 		for (std::shared_ptr<element_information>& member : cast -> members) {
-			EMIT("\t", (*member -> type) -> flatcc_reference(), " ",
-				std::string("__") + std::to_string(indent) + "_" + member -> name, ";");
-			APPEND(emit_serialize(name + "." + member -> name,
-				std::string("__") + std::to_string(indent) + "_" + member -> name,
-				*member -> type, indent + 1));
+			if (!(member -> attr_flag & ATTRIBUTE_VLA)) {
+				EMIT("\t", (*member -> type) -> flatcc_reference(), " ",
+					std::string("__") + std::to_string(indent) + "_" + member -> name, ";");
+				APPEND(emit_serialize(name + "." + member -> name,
+					std::string("__") + std::to_string(indent) + "_" + member -> name,
+					*member -> type, indent + 1));
+				if (member -> attr_flag & ATTRIBUTE_SIZE) {
+					sizes.push(name + "." + member -> name);
+				}
+			}
+		}
+		for (std::shared_ptr<element_information>& member : cast -> members) {
+			if (member -> attr_flag & ATTRIBUTE_VLA) {
+				std::dynamic_pointer_cast<array_information>(*member -> type) -> lengths =
+					std::vector <std::string>(1, sizes.front());
+				sizes.pop();
+				EMIT("\t", (*member -> type) -> flatcc_reference(), " ",
+					std::string("__") + std::to_string(indent) + "_" + member -> name, ";");
+				APPEND(emit_serialize(name + "." + member -> name,
+					std::string("__") + std::to_string(indent) + "_" + member -> name,
+					*member -> type, indent + 1));
+			}
 		}
 		// construct the struct
 		for (std::shared_ptr<element_information>& member : cast -> members) {
@@ -161,10 +179,26 @@ std::string emit_deserialize(const std::string& name, const std::string& seriali
 		std::shared_ptr<struct_information> cast =
 			std::dynamic_pointer_cast<struct_information>(type);
 		// de-serialize each member
+		std::queue<std::string> sizes;
 		for (std::shared_ptr<element_information>& member : cast -> members) {
-			APPEND(emit_deserialize(name + "." + member -> name,
-				cast -> name + "_" + member -> name + "(" + serialized_name + ")",
-				*member -> type, indent + 1));
+			if (!(member -> attr_flag & ATTRIBUTE_VLA)) {
+				APPEND(emit_deserialize(name + "." + member -> name,
+					cast -> name + "_" + member -> name + "(" + serialized_name + ")",
+					*member -> type, indent + 1));
+				if (member -> attr_flag & ATTRIBUTE_SIZE) {
+					sizes.push(name + "." + member -> name);
+				}
+			}
+		}
+		for (std::shared_ptr<element_information>& member : cast -> members) {
+			if (member -> attr_flag & ATTRIBUTE_VLA) {
+				std::dynamic_pointer_cast<array_information>(*member -> type) -> lengths =
+					std::vector <std::string>(1, sizes.front());
+				sizes.pop();
+				APPEND(emit_deserialize(name + "." + member -> name,
+					cast -> name + "_" + member -> name + "(" + serialized_name + ")",
+					*member -> type, indent + 1));
+			}
 		}
 	} else if (typeid(*type) == typeid(pointer_information)) {
 		// get the exact data type
