@@ -51,6 +51,7 @@ std::string primitive_type_information::flatcc_reference() const {
 }
 
 std::string array_information::str(const std::string& name) const {
+	if (is_vla) return (*element_type) -> str(std::string("*") + name);
 	std::string name_lengths = name;
 	for (size_t i = lengths.size(); i > 0; --i)
 		name_lengths += std::string("[") + lengths[i - 1] + "]";
@@ -170,6 +171,18 @@ std::shared_ptr<element_information> parse_element(CXCursor cursor) {
 	parsed -> name = std::to_string(clang_getCursorSpelling(cursor));
 	// type
 	parsed -> type = parse_type(clang_getCursorType(cursor));
+	// attributes
+	parsed -> attr_flag = 0;
+	clang_visitChildren(cursor, [](CXCursor cursor, CXCursor parent, CXClientData client_data) -> CXChildVisitResult{
+		if (clang_getCursorKind(cursor) == CXCursor_AnnotateAttr) {
+			if (std::to_string(clang_getCursorSpelling(cursor)) == ATTRIBUTE_VLA_STR) {
+				*(int *)client_data |= ATTRIBUTE_VLA;
+			} else if (std::to_string(clang_getCursorSpelling(cursor)) == ATTRIBUTE_SIZE_STR) {
+				*(int *)client_data |= ATTRIBUTE_SIZE;
+			}
+		}
+		return CXChildVisit_Continue;
+	}, &parsed -> attr_flag);
 	return parsed;
 }
 
@@ -189,6 +202,19 @@ std::shared_ptr<function_information> parse_function(CXCursor cursor) {
 		}
 		return CXChildVisit_Continue;
 	}, &parsed -> arguments);
+	// handling vectors
+	std::vector <size_t> vectors;
+	for (size_t i = 0; i < parsed -> arguments.size(); ++i) {
+		if (parsed -> arguments[i] -> attr_flag & ATTRIBUTE_VLA) {
+			vectors.push_back(i);
+		}
+	}
+	for (size_t i = 0; i < vectors.size(); ++i) {
+		type_pool[parsed -> arguments[vectors[i]] -> type.p] = std::shared_ptr<array_information>(
+			new array_information(std::vector<std::string>(),
+				std::dynamic_pointer_cast<pointer_information>(*parsed -> arguments[vectors[i]] -> type) -> type, true));
+	}
+	// handling indexes
 	parsed -> index = global_function_index++;
 	return parsed;
 }

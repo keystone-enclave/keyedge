@@ -1,13 +1,13 @@
 #include "ocalls_host.h"
 
-int print_string(char msg[50]) {
+int print_string(char* msg, int size) {
 	int ret = printf("%s\n", msg);
 	fflush(stdout);
 	return ret;
 }
 
-int print_int(int msg) {
-	int ret = printf("%d\n", msg);
+int print_return_value(int msg) {
+	int ret = printf("The function previously called returned %d.\n", msg);
 	fflush(stdout);
 	return ret;
 }

@@ -4,8 +4,7 @@
 #include "ocalls_common.h"
 #include "ocalls_builder.h"
 #include "ocalls_reader.h"
-int print_int(int msg);
-void __wrapper_print_int(void* buffer) {
+void __wrapper_print_return_value(void* buffer) {
 	struct edge_call* edge_call = (struct edge_call*) buffer;
 	uintptr_t call_args;
 	size_t arg_len;
@@ -14,28 +13,28 @@ void __wrapper_print_int(void* buffer) {
 		return;
 	}
 	int msg;
-	__ocall_wrapper_print_int_table_t function_reference = __ocall_wrapper_print_int_as_root((void *) call_args);
-	int __flatcc_reference_msg = __ocall_wrapper_print_int_msg(function_reference);
+	__ocall_wrapper_print_return_value_table_t function_reference = __ocall_wrapper_print_return_value_as_root((void *) call_args);
+	int __flatcc_reference_msg = __ocall_wrapper_print_return_value_msg(function_reference);
 	{
 		msg = __flatcc_reference_msg;
 	}
 	int ret_val;
-	ret_val = print_int(msg);
+	ret_val = print_return_value(msg);
 	flatcc_builder_t builder;
 	flatcc_builder_init(&builder);
 	int __flatcc_reference_ret_val;
 	{
 		__flatcc_reference_ret_val = ret_val;
 	}
-	__ocall_wrapper_print_int_start_as_root(&builder);
-	__ocall_wrapper_print_int___return_value_add(&builder, __flatcc_reference_ret_val);
-	__ocall_wrapper_print_int_end_as_root(&builder);
-	void* buf;
-	size_t size;
-	buf = (void *) flatcc_builder_finalize_buffer(&builder, &size);
+	__ocall_wrapper_print_return_value_start_as_root(&builder);
+	__ocall_wrapper_print_return_value___return_value_add(&builder, __flatcc_reference_ret_val);
+	__ocall_wrapper_print_return_value_end_as_root(&builder);
+	void* __buf;
+	size_t __size;
+	__buf = (void *) flatcc_builder_finalize_buffer(&builder, &__size);
 	uintptr_t data_section = edge_call_data_ptr();
-	memcpy((void *) data_section, buf, size);
-	free(buf);
+	memcpy((void *) data_section, __buf, __size);
+	free(__buf);
 	flatcc_builder_clear(&builder);
 	if (edge_call_setup_ret(edge_call, (void*) data_section, 1024)) {
 		edge_call -> return_data.call_status = CALL_STATUS_BAD_PTR;
@@ -44,7 +43,6 @@ void __wrapper_print_int(void* buffer) {
 	}
 	return;
 }
-int print_string(char msg[50]);
 void __wrapper_print_string(void* buffer) {
 	struct edge_call* edge_call = (struct edge_call*) buffer;
 	uintptr_t call_args;
@@ -53,18 +51,24 @@ void __wrapper_print_string(void* buffer) {
 		edge_call -> return_data.call_status = CALL_STATUS_BAD_OFFSET;
 		return;
 	}
-	char msg[50];
+	char *msg;
+	int size;
 	__ocall_wrapper_print_string_table_t function_reference = __ocall_wrapper_print_string_as_root((void *) call_args);
+	int __flatcc_reference_size = __ocall_wrapper_print_string_size(function_reference);
+	{
+		size = __flatcc_reference_size;
+	}
 	flatbuffers_int8_vec_t __flatcc_reference_msg = __ocall_wrapper_print_string_msg(function_reference);
 	{
-		for (size_t i1 = 0; i1 < (50); ++i1) {
+		msg = (char *) malloc((size) * sizeof(char));
+		for (size_t i1 = 0; i1 < (size_t) (size); ++i1) {
 			{
-				msg[i1] = flatbuffers_int8_vec_at(__flatcc_reference_msg, i1 + (50) * (0));
+				msg[i1] = flatbuffers_int8_vec_at(__flatcc_reference_msg, i1 + (size) * (0));
 			}
 		}
 	}
 	int ret_val;
-	ret_val = print_string(msg);
+	ret_val = print_string(msg, size);
 	flatcc_builder_t builder;
 	flatcc_builder_init(&builder);
 	int __flatcc_reference_ret_val;
@@ -74,12 +78,12 @@ void __wrapper_print_string(void* buffer) {
 	__ocall_wrapper_print_string_start_as_root(&builder);
 	__ocall_wrapper_print_string___return_value_add(&builder, __flatcc_reference_ret_val);
 	__ocall_wrapper_print_string_end_as_root(&builder);
-	void* buf;
-	size_t size;
-	buf = (void *) flatcc_builder_finalize_buffer(&builder, &size);
+	void* __buf;
+	size_t __size;
+	__buf = (void *) flatcc_builder_finalize_buffer(&builder, &__size);
 	uintptr_t data_section = edge_call_data_ptr();
-	memcpy((void *) data_section, buf, size);
-	free(buf);
+	memcpy((void *) data_section, __buf, __size);
+	free(__buf);
 	flatcc_builder_clear(&builder);
 	if (edge_call_setup_ret(edge_call, (void*) data_section, 1024)) {
 		edge_call -> return_data.call_status = CALL_STATUS_BAD_PTR;
@@ -89,7 +93,7 @@ void __wrapper_print_string(void* buffer) {
 	return;
 }
 void register_functions() {
-	register_call(__function_print_int, __wrapper_print_int);
+	register_call(__function_print_return_value, __wrapper_print_return_value);
 	register_call(__function_print_string, __wrapper_print_string);
 	return;
 }

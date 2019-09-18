@@ -1,13 +1,17 @@
 #ifndef __PARSER_H
 #define __PARSER_H
 
+#include <cassert>
 #include <iostream>
 #include <map>
 #include <memory>
+#include <queue>
 #include <string>
 #include <typeinfo>
 #include <utility>
 #include <vector>
+
+#include "attributes.h"
 
 #include <clang-c/Index.h>
 
@@ -54,20 +58,22 @@ struct primitive_type_information : type_information {
 struct array_information : type_information {
 	std::vector<std::string> lengths;
 	type_indicator element_type;
+	bool is_vla;
 	virtual std::string str(const std::string& name = "") const;
 	virtual std::string fbs_type() const;
 	virtual std::string flatcc_prefix() const;
 	virtual std::string flatcc_type() const;
 	virtual std::string flatcc_reference() const;
 	array_information(const std::vector<std::string>& lengths,
-		type_indicator element_type) :
-		lengths(lengths), element_type(element_type) {}
+		type_indicator element_type, bool is_vla = false) :
+		lengths(lengths), element_type(element_type), is_vla(is_vla) {}
 };
 
 // an element, consisting of a type and a name
 struct element_information {
 	type_indicator type;
 	std::string name;
+	int attr_flag;
 };
 
 // structs

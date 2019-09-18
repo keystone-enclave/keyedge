@@ -17,57 +17,93 @@
 #define flatbuffers_extension ".bin"
 #endif
 
-static const flatbuffers_voffset_t ____ocall_wrapper_print_int_required[] = { 0 };
-typedef flatbuffers_ref_t __ocall_wrapper_print_int_ref_t;
-static __ocall_wrapper_print_int_ref_t __ocall_wrapper_print_int_clone(flatbuffers_builder_t *B, __ocall_wrapper_print_int_table_t t);
-__flatbuffers_build_table(flatbuffers_, __ocall_wrapper_print_int, 2)
+static const flatbuffers_voffset_t ____pointer_flatbuffers_int8_required[] = { 0 };
+typedef flatbuffers_ref_t __pointer_flatbuffers_int8_ref_t;
+static __pointer_flatbuffers_int8_ref_t __pointer_flatbuffers_int8_clone(flatbuffers_builder_t *B, __pointer_flatbuffers_int8_table_t t);
+__flatbuffers_build_table(flatbuffers_, __pointer_flatbuffers_int8, 2)
+
+static const flatbuffers_voffset_t ____ocall_wrapper_print_return_value_required[] = { 0 };
+typedef flatbuffers_ref_t __ocall_wrapper_print_return_value_ref_t;
+static __ocall_wrapper_print_return_value_ref_t __ocall_wrapper_print_return_value_clone(flatbuffers_builder_t *B, __ocall_wrapper_print_return_value_table_t t);
+__flatbuffers_build_table(flatbuffers_, __ocall_wrapper_print_return_value, 2)
 
 static const flatbuffers_voffset_t ____ocall_wrapper_print_string_required[] = { 0 };
 typedef flatbuffers_ref_t __ocall_wrapper_print_string_ref_t;
 static __ocall_wrapper_print_string_ref_t __ocall_wrapper_print_string_clone(flatbuffers_builder_t *B, __ocall_wrapper_print_string_table_t t);
-__flatbuffers_build_table(flatbuffers_, __ocall_wrapper_print_string, 2)
+__flatbuffers_build_table(flatbuffers_, __ocall_wrapper_print_string, 3)
 
-#define ____ocall_wrapper_print_int_formal_args , int64_t v0, int64_t v1
-#define ____ocall_wrapper_print_int_call_args , v0, v1
-static inline __ocall_wrapper_print_int_ref_t __ocall_wrapper_print_int_create(flatbuffers_builder_t *B ____ocall_wrapper_print_int_formal_args);
-__flatbuffers_build_table_prolog(flatbuffers_, __ocall_wrapper_print_int, __ocall_wrapper_print_int_identifier, __ocall_wrapper_print_int_type_identifier)
+#define ____pointer_flatbuffers_int8_formal_args , flatbuffers_bool_t v0, int8_t v1
+#define ____pointer_flatbuffers_int8_call_args , v0, v1
+static inline __pointer_flatbuffers_int8_ref_t __pointer_flatbuffers_int8_create(flatbuffers_builder_t *B ____pointer_flatbuffers_int8_formal_args);
+__flatbuffers_build_table_prolog(flatbuffers_, __pointer_flatbuffers_int8, __pointer_flatbuffers_int8_identifier, __pointer_flatbuffers_int8_type_identifier)
 
-#define ____ocall_wrapper_print_string_formal_args , flatbuffers_int8_vec_ref_t v0, int64_t v1
-#define ____ocall_wrapper_print_string_call_args , v0, v1
+#define ____ocall_wrapper_print_return_value_formal_args , int64_t v0, int64_t v1
+#define ____ocall_wrapper_print_return_value_call_args , v0, v1
+static inline __ocall_wrapper_print_return_value_ref_t __ocall_wrapper_print_return_value_create(flatbuffers_builder_t *B ____ocall_wrapper_print_return_value_formal_args);
+__flatbuffers_build_table_prolog(flatbuffers_, __ocall_wrapper_print_return_value, __ocall_wrapper_print_return_value_identifier, __ocall_wrapper_print_return_value_type_identifier)
+
+#define ____ocall_wrapper_print_string_formal_args , flatbuffers_int8_vec_ref_t v0, int64_t v1, int64_t v2
+#define ____ocall_wrapper_print_string_call_args , v0, v1, v2
 static inline __ocall_wrapper_print_string_ref_t __ocall_wrapper_print_string_create(flatbuffers_builder_t *B ____ocall_wrapper_print_string_formal_args);
 __flatbuffers_build_table_prolog(flatbuffers_, __ocall_wrapper_print_string, __ocall_wrapper_print_string_identifier, __ocall_wrapper_print_string_type_identifier)
 
-__flatbuffers_build_scalar_field(0, flatbuffers_, __ocall_wrapper_print_int_msg, flatbuffers_int64, int64_t, 8, 8, INT64_C(0), __ocall_wrapper_print_int)
-__flatbuffers_build_scalar_field(1, flatbuffers_, __ocall_wrapper_print_int___return_value, flatbuffers_int64, int64_t, 8, 8, INT64_C(0), __ocall_wrapper_print_int)
+__flatbuffers_build_scalar_field(0, flatbuffers_, __pointer_flatbuffers_int8___is_null, flatbuffers_bool, flatbuffers_bool_t, 1, 1, UINT8_C(0), __pointer_flatbuffers_int8)
+__flatbuffers_build_scalar_field(1, flatbuffers_, __pointer_flatbuffers_int8___data, flatbuffers_int8, int8_t, 1, 1, INT8_C(0), __pointer_flatbuffers_int8)
 
-static inline __ocall_wrapper_print_int_ref_t __ocall_wrapper_print_int_create(flatbuffers_builder_t *B ____ocall_wrapper_print_int_formal_args)
+static inline __pointer_flatbuffers_int8_ref_t __pointer_flatbuffers_int8_create(flatbuffers_builder_t *B ____pointer_flatbuffers_int8_formal_args)
 {
-    if (__ocall_wrapper_print_int_start(B)
-        || __ocall_wrapper_print_int_msg_add(B, v0)
-        || __ocall_wrapper_print_int___return_value_add(B, v1)) {
+    if (__pointer_flatbuffers_int8_start(B)
+        || __pointer_flatbuffers_int8___is_null_add(B, v0)
+        || __pointer_flatbuffers_int8___data_add(B, v1)) {
         return 0;
     }
-    return __ocall_wrapper_print_int_end(B);
+    return __pointer_flatbuffers_int8_end(B);
 }
 
-static __ocall_wrapper_print_int_ref_t __ocall_wrapper_print_int_clone(flatbuffers_builder_t *B, __ocall_wrapper_print_int_table_t t)
+static __pointer_flatbuffers_int8_ref_t __pointer_flatbuffers_int8_clone(flatbuffers_builder_t *B, __pointer_flatbuffers_int8_table_t t)
 {
     __flatbuffers_memoize_begin(B, t);
-    if (__ocall_wrapper_print_int_start(B)
-        || __ocall_wrapper_print_int_msg_pick(B, t)
-        || __ocall_wrapper_print_int___return_value_pick(B, t)) {
+    if (__pointer_flatbuffers_int8_start(B)
+        || __pointer_flatbuffers_int8___is_null_pick(B, t)
+        || __pointer_flatbuffers_int8___data_pick(B, t)) {
         return 0;
     }
-    __flatbuffers_memoize_end(B, t, __ocall_wrapper_print_int_end(B));
+    __flatbuffers_memoize_end(B, t, __pointer_flatbuffers_int8_end(B));
+}
+
+__flatbuffers_build_scalar_field(0, flatbuffers_, __ocall_wrapper_print_return_value_msg, flatbuffers_int64, int64_t, 8, 8, INT64_C(0), __ocall_wrapper_print_return_value)
+__flatbuffers_build_scalar_field(1, flatbuffers_, __ocall_wrapper_print_return_value___return_value, flatbuffers_int64, int64_t, 8, 8, INT64_C(0), __ocall_wrapper_print_return_value)
+
+static inline __ocall_wrapper_print_return_value_ref_t __ocall_wrapper_print_return_value_create(flatbuffers_builder_t *B ____ocall_wrapper_print_return_value_formal_args)
+{
+    if (__ocall_wrapper_print_return_value_start(B)
+        || __ocall_wrapper_print_return_value_msg_add(B, v0)
+        || __ocall_wrapper_print_return_value___return_value_add(B, v1)) {
+        return 0;
+    }
+    return __ocall_wrapper_print_return_value_end(B);
+}
+
+static __ocall_wrapper_print_return_value_ref_t __ocall_wrapper_print_return_value_clone(flatbuffers_builder_t *B, __ocall_wrapper_print_return_value_table_t t)
+{
+    __flatbuffers_memoize_begin(B, t);
+    if (__ocall_wrapper_print_return_value_start(B)
+        || __ocall_wrapper_print_return_value_msg_pick(B, t)
+        || __ocall_wrapper_print_return_value___return_value_pick(B, t)) {
+        return 0;
+    }
+    __flatbuffers_memoize_end(B, t, __ocall_wrapper_print_return_value_end(B));
 }
 
 __flatbuffers_build_vector_field(0, flatbuffers_, __ocall_wrapper_print_string_msg, flatbuffers_int8, int8_t, __ocall_wrapper_print_string)
-__flatbuffers_build_scalar_field(1, flatbuffers_, __ocall_wrapper_print_string___return_value, flatbuffers_int64, int64_t, 8, 8, INT64_C(0), __ocall_wrapper_print_string)
+__flatbuffers_build_scalar_field(1, flatbuffers_, __ocall_wrapper_print_string_size, flatbuffers_int64, int64_t, 8, 8, INT64_C(0), __ocall_wrapper_print_string)
+__flatbuffers_build_scalar_field(2, flatbuffers_, __ocall_wrapper_print_string___return_value, flatbuffers_int64, int64_t, 8, 8, INT64_C(0), __ocall_wrapper_print_string)
 
 static inline __ocall_wrapper_print_string_ref_t __ocall_wrapper_print_string_create(flatbuffers_builder_t *B ____ocall_wrapper_print_string_formal_args)
 {
     if (__ocall_wrapper_print_string_start(B)
-        || __ocall_wrapper_print_string___return_value_add(B, v1)
+        || __ocall_wrapper_print_string_size_add(B, v1)
+        || __ocall_wrapper_print_string___return_value_add(B, v2)
         || __ocall_wrapper_print_string_msg_add(B, v0)) {
         return 0;
     }
@@ -78,6 +114,7 @@ static __ocall_wrapper_print_string_ref_t __ocall_wrapper_print_string_clone(fla
 {
     __flatbuffers_memoize_begin(B, t);
     if (__ocall_wrapper_print_string_start(B)
+        || __ocall_wrapper_print_string_size_pick(B, t)
         || __ocall_wrapper_print_string___return_value_pick(B, t)
         || __ocall_wrapper_print_string_msg_pick(B, t)) {
         return 0;

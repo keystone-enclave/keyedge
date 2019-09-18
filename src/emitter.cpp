@@ -58,11 +58,13 @@ std::string emit_serialize(const std::string& name, const std::string& serialize
 			index += ")";
 		}
 		// define the variable for array data
-		EMIT("\t", (*cast -> element_type) -> flatcc_reference(), " ", data_name, "[", length, "]", ";");
+		EMIT("\t", (*cast -> element_type) -> flatcc_reference(), " *", data_name, " = (",
+			(*cast -> element_type) -> flatcc_reference(), " *) malloc((",
+			length, ") * sizeof(",	(*cast -> element_type) -> flatcc_reference(), " *));");
 		// copy the values
 		for (size_t i = 0; i < cast -> lengths.size(); ++i) {
 			std::string var = "i" + std::to_string(indent + i);
-			EMIT(emit_indent(i), "\tfor (size_t ", var, " = 0; ", var, " < (", cast -> lengths[i], "); ++", var, ") {");
+			EMIT(emit_indent(i), "\tfor (size_t ", var, " = 0; ", var, " < (size_t) (", cast -> lengths[i], "); ++", var, ") {");
 		}
 		APPEND(emit_serialize(name + suffix, data_name + "[" + index + "]",
 			*cast -> element_type, indent + 1 + cast -> lengths.size()));
@@ -77,6 +79,7 @@ std::string emit_serialize(const std::string& name, const std::string& serialize
 			EMIT("\t", serialized_name, " = ", type -> flatcc_prefix(),
 				"_create(&builder, ", data_name, ", ", length, ");"); 
 		}
+		EMIT("\tfree(", data_name, ");");
 	} else if (typeid(*type) == typeid(struct_information)) {
 		// get the exact data type
 		std::shared_ptr<struct_information> cast =
@@ -128,6 +131,10 @@ std::string emit_deserialize(const std::string& name, const std::string& seriali
 		// get the exact data type
 		std::shared_ptr<array_information> cast =
 			std::dynamic_pointer_cast<array_information>(type);
+		// malloc for the array if VLA
+		if (cast -> is_vla) {
+			EMIT("\t", name, " = (", (*cast -> element_type) -> str("*"), ") malloc((", cast -> lengths[0], ") * sizeof(", (*cast -> element_type) -> str(), "));");
+		}
 		// generate the suffix for the original array and the index for new variable
 		std::string suffix, index;
 		for (size_t i = 0; i < cast -> lengths.size(); ++i) {
@@ -142,7 +149,7 @@ std::string emit_deserialize(const std::string& name, const std::string& seriali
 		// copy the data
 		for (size_t i = 0; i < cast -> lengths.size(); ++i) {
 			std::string var = "i" + std::to_string(indent + i);
-			EMIT(emit_indent(i), "\tfor (size_t ", var, " = 0; ", var, " < (", cast -> lengths[i], "); ++", var, ") {");
+			EMIT(emit_indent(i), "\tfor (size_t ", var, " = 0; ", var, " < (size_t) (", cast -> lengths[i], "); ++", var, ") {");
 		}
 		APPEND(emit_deserialize(name + suffix, cast -> flatcc_prefix() + "_at(" + serialized_name + ", " + index + ")",
 			*cast -> element_type, indent + 1 + cast -> lengths.size()));
@@ -263,12 +270,30 @@ std::string emit_function_eapp(std::shared_ptr<function_information> f, size_t i
 	EMIT("\tflatcc_builder_t builder;");
 	EMIT("\tflatcc_builder_init(&builder);");
 	// serialize the arguments
+	std::queue<std::string> sizes;
 	for (size_t i = 0; i < f -> arguments.size(); ++i) {
-		EMIT("\t", (*f -> arguments[i] -> type) -> flatcc_reference(), " ",
-			"__flatcc_reference_", f -> arguments[i] -> name, ";");
-		APPEND(emit_serialize(f -> arguments[i] -> name,
-			std::string("__flatcc_reference_") + f -> arguments[i] -> name,
-			*f -> arguments[i] -> type, indent + 1));
+		if (!(f -> arguments[i] -> attr_flag & ATTRIBUTE_VLA)) {
+			EMIT("\t", (*f -> arguments[i] -> type) -> flatcc_reference(), " ",
+				"__flatcc_reference_", f -> arguments[i] -> name, ";");
+			APPEND(emit_serialize(f -> arguments[i] -> name,
+				std::string("__flatcc_reference_") + f -> arguments[i] -> name,
+				*f -> arguments[i] -> type, indent + 1));
+			if (f -> arguments[i] -> attr_flag & ATTRIBUTE_SIZE) {
+				sizes.push(f -> arguments[i] -> name);
+			}
+		}
+	}
+	for (size_t i = 0; i < f -> arguments.size(); ++i) {
+		if (f -> arguments[i] -> attr_flag & ATTRIBUTE_VLA) {
+			std::dynamic_pointer_cast<array_information>(*f -> arguments[i] -> type) -> lengths =
+				std::vector <std::string>(1, sizes.front());
+			sizes.pop();
+			EMIT("\t", (*f -> arguments[i] -> type) -> flatcc_reference(), " ",
+				"__flatcc_reference_", f -> arguments[i] -> name, ";");
+			APPEND(emit_serialize(f -> arguments[i] -> name,
+				std::string("__flatcc_reference_") + f -> arguments[i] -> name,
+				*f -> arguments[i] -> type, indent + 1));
+		}
 	}
 	// construct the argument table
 	EMIT("\t__ocall_wrapper_", f -> name, "_start_as_root(&builder);");
@@ -278,15 +303,15 @@ std::string emit_function_eapp(std::shared_ptr<function_information> f, size_t i
 	}
 	EMIT("\t__ocall_wrapper_", f -> name, "_end_as_root(&builder);");
 	// get the table
-	EMIT("\tvoid* buf;");
-	EMIT("\tsize_t size;");
-	EMIT("\tbuf = (void *) flatcc_builder_finalize_buffer(&builder, &size);");
+	EMIT("\tvoid* __buf;");
+	EMIT("\tsize_t __size;");
+	EMIT("\t__buf = (void *) flatcc_builder_finalize_buffer(&builder, &__size);");
 	// get some space for the return value
 	EMIT("\tchar return_address[1024];");
 	// perform the ocall
-	EMIT("\tocall(__function_", f -> name, ", buf, size, return_address, 1024);");
+	EMIT("\tocall(__function_", f -> name, ", __buf, __size, return_address, 1024);");
 	// clean-up
-	EMIT("\tfree(buf);");
+	EMIT("\tfree(__buf);");
 	EMIT("\tflatcc_builder_clear(&builder);");
 	// return the value
 	EMIT("\t", (*f -> return_type) -> str("__return_value"), ";");
@@ -300,8 +325,6 @@ std::string emit_function_eapp(std::shared_ptr<function_information> f, size_t i
 
 std::string emit_function_host(std::shared_ptr<function_information> f, size_t indent = 0) {
 	BEGIN_EMIT;
-	// give a definition of the original function
-	EMIT((*f -> return_type) -> str(f -> name), emit_function_argument_list(f), ";");
 	// wrapper
 	EMIT("void __wrapper_", f -> name, "(void* buffer) {");
 	EMIT("\tstruct edge_call* edge_call = (struct edge_call*) buffer;");
@@ -317,13 +340,32 @@ std::string emit_function_host(std::shared_ptr<function_information> f, size_t i
 	}
 	// de-serialize the arguments
 	EMIT("\t__ocall_wrapper_", f -> name, "_table_t function_reference = __ocall_wrapper_", f -> name, "_as_root((void *) call_args);");
+	std::queue<std::string> sizes;
 	for (size_t i = 0; i < f -> arguments.size(); ++i) {
-		EMIT("\t", (*f -> arguments[i] -> type) -> flatcc_type(), " ",
-			"__flatcc_reference_", f -> arguments[i] -> name, " = ",
-			"__ocall_wrapper_", f -> name, "_", f -> arguments[i] -> name, "(function_reference);");
-		APPEND(emit_deserialize(f -> arguments[i] -> name,
-			std::string("__flatcc_reference_") + f -> arguments[i] -> name,
-			*f -> arguments[i] -> type, indent + 1));
+		if (!(f -> arguments[i] -> attr_flag & ATTRIBUTE_VLA)) {
+			EMIT("\t", (*f -> arguments[i] -> type) -> flatcc_type(), " ",
+				"__flatcc_reference_", f -> arguments[i] -> name, " = ",
+				"__ocall_wrapper_", f -> name, "_", f -> arguments[i] -> name, "(function_reference);");
+			APPEND(emit_deserialize(f -> arguments[i] -> name,
+				std::string("__flatcc_reference_") + f -> arguments[i] -> name,
+				*f -> arguments[i] -> type, indent + 1));
+			if (f -> arguments[i] -> attr_flag & ATTRIBUTE_SIZE) {
+				sizes.push(f -> arguments[i] -> name);
+			}
+		}
+	}
+	for (size_t i = 0; i < f -> arguments.size(); ++i) {
+		if (f -> arguments[i] -> attr_flag & ATTRIBUTE_VLA) {
+			std::dynamic_pointer_cast<array_information>(*f -> arguments[i] -> type) -> lengths =
+				std::vector <std::string>(1, sizes.front());
+			sizes.pop();
+			EMIT("\t", (*f -> arguments[i] -> type) -> flatcc_type(), " ",
+				"__flatcc_reference_", f -> arguments[i] -> name, " = ",
+				"__ocall_wrapper_", f -> name, "_", f -> arguments[i] -> name, "(function_reference);");
+			APPEND(emit_deserialize(f -> arguments[i] -> name,
+				std::string("__flatcc_reference_") + f -> arguments[i] -> name,
+				*f -> arguments[i] -> type, indent + 1));
+		}
 	}
 	// call the function
 	EMIT("\t", (*f -> return_type) -> str("ret_val"), ";");
@@ -344,12 +386,12 @@ std::string emit_function_host(std::shared_ptr<function_information> f, size_t i
 	EMIT("\t__ocall_wrapper_", f -> name, "___return_value_add(&builder, __flatcc_reference_ret_val);");
 	EMIT("\t__ocall_wrapper_", f -> name, "_end_as_root(&builder);");
 	// get the table
-	EMIT("\tvoid* buf;");
-	EMIT("\tsize_t size;");
-	EMIT("\tbuf = (void *) flatcc_builder_finalize_buffer(&builder, &size);");
+	EMIT("\tvoid* __buf;");
+	EMIT("\tsize_t __size;");
+	EMIT("\t__buf = (void *) flatcc_builder_finalize_buffer(&builder, &__size);");
 	EMIT("\tuintptr_t data_section = edge_call_data_ptr();");
-	EMIT("\tmemcpy((void *) data_section, buf, size);"); 
-	EMIT("\tfree(buf);");
+	EMIT("\tmemcpy((void *) data_section, __buf, __size);"); 
+	EMIT("\tfree(__buf);");
 	EMIT("\tflatcc_builder_clear(&builder);");
 	EMIT("\tif (edge_call_setup_ret(edge_call, (void*) data_section, 1024)) {");
     EMIT("\t\tedge_call -> return_data.call_status = CALL_STATUS_BAD_PTR;");
