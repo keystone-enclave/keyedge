@@ -110,7 +110,7 @@ struct function_information {
 extern std::map<std::string, std::shared_ptr<type_information>> type_lookup;
 extern std::map<std::string, std::shared_ptr<function_information>> function_lookup;
 extern std::vector<std::shared_ptr<struct_information>> struct_pool;
-extern std::map<std::string, std::shared_ptr<pointer_information>> pointer_lookup;
+extern std::vector<std::shared_ptr<pointer_information>> pointer_pool;
 
 // primitive type initialization
 void initialize_primitive_types();

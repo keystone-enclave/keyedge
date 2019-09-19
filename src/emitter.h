@@ -4,6 +4,7 @@
 #include "parser.h"
 
 #include <memory>
+#include <set>
 #include <sstream>
 #include <typeinfo>
 

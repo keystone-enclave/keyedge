@@ -535,8 +535,12 @@ std::string emit_fbs(size_t indent) {
 	for (auto& str : struct_pool) {
 		APPEND(emit_struct_fbs(str));
 	}
-	for (auto& pointer_pair : pointer_lookup) {
-		APPEND(emit_pointer_fbs(pointer_pair.second));
+	std::set<std::string> known_pointers;
+	for (auto& pointer : pointer_pool) {
+		if (known_pointers.find(pointer -> fbs_type()) == known_pointers.end()) {
+			known_pointers.insert(pointer -> fbs_type());
+			APPEND(emit_pointer_fbs(pointer));
+		}
 	}
 	for (auto& function_pair : function_lookup) {
 		APPEND(emit_function_fbs(function_pair.second));

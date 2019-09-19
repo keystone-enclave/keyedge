@@ -118,7 +118,7 @@ std::map<std::string, std::shared_ptr<type_information>> type_lookup;
 std::vector<std::shared_ptr<type_information>> type_pool;
 std::map<std::string, std::shared_ptr<function_information>> function_lookup;
 std::vector<std::shared_ptr<struct_information>> struct_pool;
-std::map<std::string, std::shared_ptr<pointer_information>> pointer_lookup;
+std::vector<std::shared_ptr<pointer_information>> pointer_pool;
 
 bool type_indicator::operator !() const {
 	return is_null;
@@ -156,6 +156,12 @@ void initialize_primitive_types() {
 		new primitive_type_information("signed long", "int32"));
 	type_lookup["unsigned long"] = std::shared_ptr<type_information>(
 		new primitive_type_information("unsigned long", "uint32"));
+	type_lookup["long long"] = std::shared_ptr<type_information>(
+		new primitive_type_information("long long", "int64"));
+	type_lookup["signed long long"] = std::shared_ptr<type_information>(
+		new primitive_type_information("signed long long", "int64"));
+	type_lookup["unsigned long long"] = std::shared_ptr<type_information>(
+		new primitive_type_information("unsigned long long", "uint64"));
 	// TODO: add more primitive types
 }
 
@@ -165,7 +171,7 @@ type_indicator parse_type(CXType type) {
 	if (type.kind == CXType_Pointer) {
 		type_pool.push_back(std::shared_ptr<pointer_information>(
 			new pointer_information(parse_type(clang_getPointeeType(type)))));
-		pointer_lookup[type_pool.back() -> fbs_type()] = std::dynamic_pointer_cast<pointer_information>(type_pool.back());
+		pointer_pool.push_back(std::dynamic_pointer_cast<pointer_information>(type_pool.back()));
 		return type_indicator(type_pool.size() - 1);
 	}
 	// array detection
