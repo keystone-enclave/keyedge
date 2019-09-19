@@ -73,7 +73,8 @@ static int __ocall_wrapper_print_string_verify_table(flatcc_table_verifier_descr
 {
     int ret;
     if ((ret = flatcc_verify_vector_field(td, 0, 0, 1, 1, INT64_C(4294967295)) /* msg */)) return ret;
-    if ((ret = flatcc_verify_field(td, 1, 4, 4) /* __return_value */)) return ret;
+    if ((ret = flatcc_verify_field(td, 1, 4, 4) /* size */)) return ret;
+    if ((ret = flatcc_verify_field(td, 2, 4, 4) /* __return_value */)) return ret;
     return flatcc_verify_ok;
 }
 

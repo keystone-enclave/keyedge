@@ -28,23 +28,27 @@ int print_return_value(int msg) {
 	}
 	return __return_value;
 }
-int print_string(char *msg) {
+int print_string(void *msg, int size) {
 	flatcc_builder_t builder;
 	flatcc_builder_init(&builder);
-	size_t __0_msg_keyedge_size = strlen(msg) + 1;
+	int __flatcc_reference_size;
+	{
+		__flatcc_reference_size = size;
+	}
 	flatbuffers_int8_vec_ref_t __flatcc_reference_msg;
 	{
-		char* __keyedge_array_data_1 = (char*) malloc((1 * (__0_msg_keyedge_size)) * sizeof(char));
-		for (size_t i1 = 0; i1 < (size_t) (__0_msg_keyedge_size); ++i1) {
+		char* __keyedge_array_data_1 = (char*) malloc((1 * (size)) * sizeof(char));
+		for (size_t i1 = 0; i1 < (size_t) (size); ++i1) {
 			{
-				__keyedge_array_data_1[i1 + (__0_msg_keyedge_size) * (0)] = msg[i1];
+				__keyedge_array_data_1[i1 + (size) * (0)] = ((char*) msg)[i1];
 			}
 		}
-		__flatcc_reference_msg = flatbuffers_int8_vec_create(&builder, (signed char*)__keyedge_array_data_1, 1 * (__0_msg_keyedge_size));
+		__flatcc_reference_msg = flatbuffers_int8_vec_create(&builder, (signed char*)__keyedge_array_data_1, 1 * (size));
 		free(__keyedge_array_data_1);
 	}
 	__ocall_wrapper_print_string_start_as_root(&builder);
 	__ocall_wrapper_print_string_msg_add(&builder, __flatcc_reference_msg);
+	__ocall_wrapper_print_string_size_add(&builder, __flatcc_reference_size);
 	__ocall_wrapper_print_string_end_as_root(&builder);
 	void* __buf;
 	size_t __size;

@@ -58,23 +58,28 @@ std::string emit_serialize(const std::string& name, const std::string& serialize
 			index += ")";
 		}
 		// define the variable for array data
-		EMIT("\t", (*cast -> element_type) -> flatcc_reference(), " *", data_name, " = (",
-			(*cast -> element_type) -> flatcc_reference(), " *) malloc((",
-			length, ") * sizeof(",	(*cast -> element_type) -> flatcc_reference(), " *));");
+		std::string data_type = (*cast -> element_type) -> flatcc_reference();
+		if (data_type == "void") {
+			data_type = "char";
+		}
+		std::string array_length = std::string("(") + length + ") * sizeof(" + data_type + ")";
+		EMIT("\t", data_type, "* ", data_name, " = (", data_type, "*) malloc(", array_length, ");");
 		// copy the values
 		for (size_t i = 0; i < cast -> lengths.size(); ++i) {
 			std::string var = "i" + std::to_string(indent + i);
 			EMIT(emit_indent(i), "\tfor (size_t ", var, " = 0; ", var, " < (size_t) (", cast -> lengths[i], "); ++", var, ") {");
 		}
-		APPEND(emit_serialize(name + suffix, data_name + "[" + index + "]",
+		std::string var_name = name + suffix;
+		if ((*cast -> element_type) -> str() == "void") var_name = std::string("((char*) ") + name + ")" + suffix;
+		APPEND(emit_serialize(var_name, data_name + "[" + index + "]",
 			*cast -> element_type, indent + 1 + cast -> lengths.size()));
 		for (size_t i = 0; i < cast -> lengths.size(); ++i) {
 			EMIT(emit_indent(cast -> lengths.size() - 1 - i), "\t}");
 		}
-		// g++ forbids implicit conversion between "signed char *" and "char *", so cast it for flatcc
-		if ((*cast -> element_type) -> str() == "char") {
+		// g++ forbids implicit conversion between "signed char*" and "char*" / "void*", so cast it for flatcc
+		if ((*cast -> element_type) -> str() == "char" || (*cast -> element_type) -> str() == "void") {
 			EMIT("\t", serialized_name, " = ", type -> flatcc_prefix(),
-				"_create(&builder, (signed char *)", data_name, ", ", length, ");"); 
+				"_create(&builder, (signed char*)", data_name, ", ", length, ");"); 
 		} else {
 			EMIT("\t", serialized_name, " = ", type -> flatcc_prefix(),
 				"_create(&builder, ", data_name, ", ", length, ");"); 
@@ -102,9 +107,16 @@ std::string emit_serialize(const std::string& name, const std::string& serialize
 		}
 		for (std::shared_ptr<element_information>& member : cast -> members) {
 			if (member -> attr_flag & ATTRIBUTE_VLA) {
-				std::dynamic_pointer_cast<array_information>(*member -> type) -> lengths =
-					std::vector <std::string>(1, sizes.front());
-				sizes.pop();
+				if (member -> attr_flag & ATTRIBUTE_STR) {
+					std::string variable_name = std::string("__") + std::to_string(indent) + "_" + member -> name + "_keyedge_size";
+					EMIT("\tsize_t ", variable_name, " = strlen(", name, ".", member -> name, ") + 1;");
+					std::dynamic_pointer_cast<array_information>(*member -> type) -> lengths =
+						std::vector <std::string>(1, variable_name);
+				} else {
+					std::dynamic_pointer_cast<array_information>(*member -> type) -> lengths =
+						std::vector <std::string>(1, sizes.front());
+					sizes.pop();
+				}
 				EMIT("\t", (*member -> type) -> flatcc_reference(), " ",
 					std::string("__") + std::to_string(indent) + "_" + member -> name, ";");
 				APPEND(emit_serialize(name + "." + member -> name,
@@ -151,7 +163,11 @@ std::string emit_deserialize(const std::string& name, const std::string& seriali
 			std::dynamic_pointer_cast<array_information>(type);
 		// malloc for the array if VLA
 		if (cast -> is_vla) {
-			EMIT("\t", name, " = (", (*cast -> element_type) -> str("*"), ") malloc((", cast -> lengths[0], ") * sizeof(", (*cast -> element_type) -> str(), "));");
+			std::string size_type = (*cast -> element_type) -> str();
+			if (size_type == "void") {
+				size_type = "char";
+			}
+			EMIT("\t", name, " = (", (*cast -> element_type) -> str("*"), ") malloc((", cast -> lengths[0], ") * sizeof(", size_type, "));");
 		}
 		// generate the suffix for the original array and the index for new variable
 		std::string suffix, index;
@@ -169,7 +185,9 @@ std::string emit_deserialize(const std::string& name, const std::string& seriali
 			std::string var = "i" + std::to_string(indent + i);
 			EMIT(emit_indent(i), "\tfor (size_t ", var, " = 0; ", var, " < (size_t) (", cast -> lengths[i], "); ++", var, ") {");
 		}
-		APPEND(emit_deserialize(name + suffix, cast -> flatcc_prefix() + "_at(" + serialized_name + ", " + index + ")",
+		std::string var_name = name + suffix;
+		if ((*cast -> element_type) -> str() == "void") var_name = std::string("((char*) ") + name + ")" + suffix;
+		APPEND(emit_deserialize(var_name, cast -> flatcc_prefix() + "_at(" + serialized_name + ", " + index + ")",
 			*cast -> element_type, indent + 1 + cast -> lengths.size()));
 		for (size_t i = 0; i < cast -> lengths.size(); ++i) {
 			EMIT(emit_indent(cast -> lengths.size() - 1 - i), "\t}");
@@ -192,9 +210,17 @@ std::string emit_deserialize(const std::string& name, const std::string& seriali
 		}
 		for (std::shared_ptr<element_information>& member : cast -> members) {
 			if (member -> attr_flag & ATTRIBUTE_VLA) {
-				std::dynamic_pointer_cast<array_information>(*member -> type) -> lengths =
-					std::vector <std::string>(1, sizes.front());
-				sizes.pop();
+				if (member -> attr_flag & ATTRIBUTE_STR) {
+					std::string variable_name = std::string("__") + std::to_string(indent) + "_" + member -> name + "_keyedge_size";
+					EMIT("\tsize_t ", variable_name, " = ", (*member -> type) -> flatcc_prefix(), "_len(",
+						cast -> name, "_", member -> name, "(", serialized_name, "));");
+					std::dynamic_pointer_cast<array_information>(*member -> type) -> lengths =
+						std::vector <std::string>(1, variable_name);
+				} else {
+					std::dynamic_pointer_cast<array_information>(*member -> type) -> lengths =
+						std::vector <std::string>(1, sizes.front());
+					sizes.pop();
+				}
 				APPEND(emit_deserialize(name + "." + member -> name,
 					cast -> name + "_" + member -> name + "(" + serialized_name + ")",
 					*member -> type, indent + 1));
@@ -319,9 +345,16 @@ std::string emit_function_eapp(std::shared_ptr<function_information> f, size_t i
 	}
 	for (size_t i = 0; i < f -> arguments.size(); ++i) {
 		if (f -> arguments[i] -> attr_flag & ATTRIBUTE_VLA) {
-			std::dynamic_pointer_cast<array_information>(*f -> arguments[i] -> type) -> lengths =
-				std::vector <std::string>(1, sizes.front());
-			sizes.pop();
+			if (f -> arguments[i] -> attr_flag & ATTRIBUTE_STR) {
+				std::string variable_name = std::string("__") + std::to_string(indent) + "_" + f -> arguments[i] -> name + "_keyedge_size";
+				EMIT("\tsize_t ", variable_name, " = strlen(", f -> arguments[i] -> name, ") + 1;");
+				std::dynamic_pointer_cast<array_information>(*f -> arguments[i] -> type) -> lengths =
+					std::vector <std::string>(1, variable_name);
+			} else {
+				std::dynamic_pointer_cast<array_information>(*f -> arguments[i] -> type) -> lengths =
+					std::vector <std::string>(1, sizes.front());
+				sizes.pop();
+			}
 			EMIT("\t", (*f -> arguments[i] -> type) -> flatcc_reference(), " ",
 				"__flatcc_reference_", f -> arguments[i] -> name, ";");
 			APPEND(emit_serialize(f -> arguments[i] -> name,
@@ -390,12 +423,20 @@ std::string emit_function_host(std::shared_ptr<function_information> f, size_t i
 	}
 	for (size_t i = 0; i < f -> arguments.size(); ++i) {
 		if (f -> arguments[i] -> attr_flag & ATTRIBUTE_VLA) {
-			std::dynamic_pointer_cast<array_information>(*f -> arguments[i] -> type) -> lengths =
-				std::vector <std::string>(1, sizes.front());
-			sizes.pop();
 			EMIT("\t", (*f -> arguments[i] -> type) -> flatcc_type(), " ",
 				"__flatcc_reference_", f -> arguments[i] -> name, " = ",
 				"__ocall_wrapper_", f -> name, "_", f -> arguments[i] -> name, "(function_reference);");
+			if (f -> arguments[i] -> attr_flag & ATTRIBUTE_STR) {
+				std::string variable_name = std::string("__") + std::to_string(indent) + "_" + f -> arguments[i] -> name + "_keyedge_size";
+				EMIT("\tsize_t ", variable_name, " = ", (*f -> arguments[i] -> type) -> flatcc_prefix(), "_len(",
+					"__flatcc_reference_", f -> arguments[i] -> name, ");");
+				std::dynamic_pointer_cast<array_information>(*f -> arguments[i] -> type) -> lengths =
+					std::vector <std::string>(1, variable_name);
+			} else {
+				std::dynamic_pointer_cast<array_information>(*f -> arguments[i] -> type) -> lengths =
+					std::vector <std::string>(1, sizes.front());
+				sizes.pop();
+			}
 			APPEND(emit_deserialize(f -> arguments[i] -> name,
 				std::string("__flatcc_reference_") + f -> arguments[i] -> name,
 				*f -> arguments[i] -> type, indent + 1));

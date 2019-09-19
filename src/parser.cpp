@@ -130,12 +130,32 @@ std::shared_ptr<type_information> type_indicator::operator *() const {
 }
 
 void initialize_primitive_types() {
+	type_lookup["void"] = std::shared_ptr<type_information>(
+		new primitive_type_information("void", "int8"));
 	type_lookup["char"] = std::shared_ptr<type_information>(
 		new primitive_type_information("char", "int8"));
 	type_lookup["signed char"] = std::shared_ptr<type_information>(
 		new primitive_type_information("signed char", "int8"));
+	type_lookup["unsigned char"] = std::shared_ptr<type_information>(
+		new primitive_type_information("unsigned char", "uint8"));
+	type_lookup["short"] = std::shared_ptr<type_information>(
+		new primitive_type_information("short", "int16"));
+	type_lookup["signed short"] = std::shared_ptr<type_information>(
+		new primitive_type_information("signed short", "int16"));
+	type_lookup["unsigned short"] = std::shared_ptr<type_information>(
+		new primitive_type_information("unsigned short", "uint16"));
 	type_lookup["int"] = std::shared_ptr<type_information>(
-		new primitive_type_information("int", "int64"));
+		new primitive_type_information("int", "int32"));
+	type_lookup["signed int"] = std::shared_ptr<type_information>(
+		new primitive_type_information("signed int", "int32"));
+	type_lookup["unsigned int"] = std::shared_ptr<type_information>(
+		new primitive_type_information("unsigned int", "uint32"));
+	type_lookup["long"] = std::shared_ptr<type_information>(
+		new primitive_type_information("long", "int32"));
+	type_lookup["signed long"] = std::shared_ptr<type_information>(
+		new primitive_type_information("signed long", "int32"));
+	type_lookup["unsigned long"] = std::shared_ptr<type_information>(
+		new primitive_type_information("unsigned long", "uint32"));
 	// TODO: add more primitive types
 }
 
@@ -179,6 +199,8 @@ std::shared_ptr<element_information> parse_element(CXCursor cursor) {
 				*(int *)client_data |= ATTRIBUTE_VLA;
 			} else if (std::to_string(clang_getCursorSpelling(cursor)) == ATTRIBUTE_SIZE_STR) {
 				*(int *)client_data |= ATTRIBUTE_SIZE;
+			} else if (std::to_string(clang_getCursorSpelling(cursor)) == ATTRIBUTE_STR_STR) {
+				*(int *)client_data |= ATTRIBUTE_STR;
 			}
 		}
 		return CXChildVisit_Continue;

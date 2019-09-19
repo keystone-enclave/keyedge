@@ -51,20 +51,24 @@ void __wrapper_print_string(void* buffer) {
 		edge_call -> return_data.call_status = CALL_STATUS_BAD_OFFSET;
 		return;
 	}
-	char *msg;
+	void *msg;
+	int size;
 	__ocall_wrapper_print_string_table_t function_reference = __ocall_wrapper_print_string_as_root((void *) call_args);
-	flatbuffers_int8_vec_t __flatcc_reference_msg = __ocall_wrapper_print_string_msg(function_reference);
-	size_t __0_msg_keyedge_size = flatbuffers_int8_vec_len(__flatcc_reference_msg);
+	int __flatcc_reference_size = __ocall_wrapper_print_string_size(function_reference);
 	{
-		msg = (char *) malloc((__0_msg_keyedge_size) * sizeof(char));
-		for (size_t i1 = 0; i1 < (size_t) (__0_msg_keyedge_size); ++i1) {
+		size = __flatcc_reference_size;
+	}
+	flatbuffers_int8_vec_t __flatcc_reference_msg = __ocall_wrapper_print_string_msg(function_reference);
+	{
+		msg = (void *) malloc((size) * sizeof(char));
+		for (size_t i1 = 0; i1 < (size_t) (size); ++i1) {
 			{
-				msg[i1] = flatbuffers_int8_vec_at(__flatcc_reference_msg, i1 + (__0_msg_keyedge_size) * (0));
+				((char*) msg)[i1] = flatbuffers_int8_vec_at(__flatcc_reference_msg, i1 + (size) * (0));
 			}
 		}
 	}
 	int ret_val;
-	ret_val = print_string(msg);
+	ret_val = print_string(msg, size);
 	flatcc_builder_t builder;
 	flatcc_builder_init(&builder);
 	int __flatcc_reference_ret_val;
