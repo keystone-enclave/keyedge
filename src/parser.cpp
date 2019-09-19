@@ -247,12 +247,24 @@ std::shared_ptr<struct_information> parse_struct(CXCursor cursor) {
 	parsed -> name = std::to_string(clang_getCursorSpelling(cursor));
 	// members
 	clang_visitChildren(cursor, [](CXCursor cursor, CXCursor parent, CXClientData client_data) -> CXChildVisitResult{
-		if (clang_getCursorKind(cursor) == CXCursor_VarDecl) {
+		if (clang_getCursorKind(cursor) == CXCursor_FieldDecl) {
 			std::shared_ptr<element_information> arg = parse_element(cursor);
 			((std::vector<std::shared_ptr<element_information>> *) client_data) -> push_back(arg);
 		}
 		return CXChildVisit_Continue;
 	}, &parsed -> members);
+	// handling vectors
+	std::vector <size_t> vectors;
+	for (size_t i = 0; i < parsed -> members.size(); ++i) {
+		if (parsed -> members[i] -> attr_flag & ATTRIBUTE_VLA) {
+			vectors.push_back(i);
+		}
+	}
+	for (size_t i = 0; i < vectors.size(); ++i) {
+		type_pool[parsed -> members[vectors[i]] -> type.p] = std::shared_ptr<array_information>(
+			new array_information(std::vector<std::string>(),
+				std::dynamic_pointer_cast<pointer_information>(*parsed -> members[vectors[i]] -> type) -> type, true));
+	}
 	return parsed;
 }
 

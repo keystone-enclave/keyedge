@@ -380,12 +380,14 @@ std::string emit_function_eapp(std::shared_ptr<function_information> f, size_t i
 	// clean-up
 	EMIT("\tfree(__buf);");
 	EMIT("\tflatcc_builder_clear(&builder);");
-	// return the value
-	EMIT("\t", (*f -> return_type) -> str("__return_value"), ";");
-	std::string ret = std::string("__ocall_wrapper_") + f -> name +
-		"___return_value(__ocall_wrapper_" + f -> name + "_as_root(return_address))";
-	APPEND(emit_deserialize("__return_value", ret, *f -> return_type, indent + 1));
-	EMIT("\treturn __return_value;");
+	if ((*f -> return_type) -> str() != "void") {
+		// return the value
+		EMIT("\t", (*f -> return_type) -> str("__return_value"), ";");
+		std::string ret = std::string("__ocall_wrapper_") + f -> name +
+			"___return_value(__ocall_wrapper_" + f -> name + "_as_root(return_address))";
+		APPEND(emit_deserialize("__return_value", ret, *f -> return_type, indent + 1));
+		EMIT("\treturn __return_value;");
+	}
 	EMIT("}");
 	RETURN_EMIT;
 }
@@ -443,22 +445,33 @@ std::string emit_function_host(std::shared_ptr<function_information> f, size_t i
 		}
 	}
 	// call the function
-	EMIT("\t", (*f -> return_type) -> str("ret_val"), ";");
-	EMIT_("\tret_val = ", f -> name, "(");
-	for (size_t i = 0; i < f -> arguments.size(); ++i) {
-		APPEND(f -> arguments[i] -> name);
-		if (i + 1 < f -> arguments.size()) APPEND(", ");
+	if ((*f -> return_type) -> str() != "void") {
+		EMIT("\t", (*f -> return_type) -> str("ret_val"), ";");
+		EMIT_("\tret_val = ", f -> name, "(");
+		for (size_t i = 0; i < f -> arguments.size(); ++i) {
+			APPEND(f -> arguments[i] -> name);
+			if (i + 1 < f -> arguments.size()) APPEND(", ");
+		}
+		APPEND_(");");
+	} else {
+		EMIT_("\t", f -> name, "(");
+		for (size_t i = 0; i < f -> arguments.size(); ++i) {
+			APPEND(f -> arguments[i] -> name);
+			if (i + 1 < f -> arguments.size()) APPEND(", ");
+		}
+		APPEND_(");");
 	}
-	APPEND_(");");
 	// initiate a flatcc buffer
 	EMIT("\tflatcc_builder_t builder;");
 	EMIT("\tflatcc_builder_init(&builder);");
-	// setup return data
-	EMIT("\t", (*f -> return_type) -> flatcc_reference(), " __flatcc_reference_ret_val;");
-	APPEND(emit_serialize("ret_val", std::string("__flatcc_reference_ret_val"),
-		*f -> return_type, indent + 1));
 	EMIT("\t__ocall_wrapper_", f -> name, "_start_as_root(&builder);");
-	EMIT("\t__ocall_wrapper_", f -> name, "___return_value_add(&builder, __flatcc_reference_ret_val);");
+	if ((*f -> return_type) -> str() != "void") {
+		// setup return data
+		EMIT("\t", (*f -> return_type) -> flatcc_reference(), " __flatcc_reference_ret_val;");
+		APPEND(emit_serialize("ret_val", std::string("__flatcc_reference_ret_val"),
+			*f -> return_type, indent + 1));
+		EMIT("\t__ocall_wrapper_", f -> name, "___return_value_add(&builder, __flatcc_reference_ret_val);");
+	}
 	EMIT("\t__ocall_wrapper_", f -> name, "_end_as_root(&builder);");
 	// get the table
 	EMIT("\tvoid* __buf;");
