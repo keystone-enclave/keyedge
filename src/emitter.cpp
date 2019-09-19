@@ -136,7 +136,7 @@ std::string emit_serialize(const std::string& name, const std::string& serialize
 			std::dynamic_pointer_cast<pointer_information>(type);
 		std::string data_name = std::string("__keyedge_pointer_data_" + std::to_string(indent));
 		EMIT("\tif (", name, ") {");
-		EMIT("\t\t", (*cast -> type) -> str(data_name), ";");
+		EMIT("\t\t", (*cast -> type) -> flatcc_reference(), " ", data_name, ";");
 		APPEND(emit_serialize(std::string("(*") + name + ")", data_name,
 			*cast -> type, indent + 2));
 		EMIT("\t\t", serialized_name, " = ", cast -> flatcc_prefix(), "_create(&builder, 0, ", data_name, ");");
