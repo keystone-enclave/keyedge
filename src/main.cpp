@@ -1,11 +1,4 @@
-#include "parser.h"
-#include "emitter.h"
-
-#include <cstdlib>
-#include <iostream>
-#include <fstream>
-
-#include <clang-c/Index.h>
+#include "index.h"
 
 int main(int argc, char* argv[]) {
 	if (argc < 2) {

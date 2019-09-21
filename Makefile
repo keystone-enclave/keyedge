@@ -6,10 +6,13 @@ LIBCLANG_INCLUDE_DIR = $$HOME/llvm-project/clang/include
 LIBCLANG_LIB_DIR = $$HOME/llvm-project/build/lib
 
 CC = g++
-CC_OPTION = -std=c++14 -g -Wall -I $(LIBCLANG_INCLUDE_DIR)
+CC_OPTION = -std=c++14 -g -Wall -I $(SRC_DIR) -I $(LIBCLANG_INCLUDE_DIR)
 LD_OPTION = -L $(LIBCLANG_LIB_DIR) -lclang -Wl,-rpath=$(LIBCLANG_LIB_DIR)
 
-KEYEDGE_OBJECTS = parser.o emitter.o main.o
+KEYEDGE_INFORMATION_OBJECTS = type_information.o type_indicator.o element_information.o \
+function_information.o primitive_type_information.o struct_information.o \
+array_information.o pointer_information.o global.o
+KEYEDGE_OBJECTS = parser.o emitter.o main.o $(addprefix information/, $(KEYEDGE_INFORMATION_OBJECTS))
 KEYEDGE_LIST = $(addprefix $(BIN_DIR)/, $(KEYEDGE_OBJECTS))
 
 RISCV_CC = riscv64-unknown-linux-gnu-gcc
@@ -20,17 +23,25 @@ FLATCC_LIST = $(addprefix $(LIB_DIR)/, $(FLATCC_OBJECTS))
 all : directory keyedge flatcc
 
 directory :
+	mkdir -p $(BIN_DIR)/information
 	mkdir -p $(BIN_DIR)
 	mkdir -p $(LIB_DIR)
 	
 keyedge : $(BIN_DIR)/keyedge
 
+-include $(KEYEDGE_LIST:.o=.d)
+
 $(BIN_DIR)/keyedge : $(KEYEDGE_LIST)
 	$(CC) $(KEYEDGE_LIST) -o $@ $(LD_OPTION)
 
-$(BIN_DIR)/%.o : $(SRC_DIR)/%.cpp
+$(BIN_DIR)/information/%.o : $(BIN_DIR)/information/%.cpp $(SRC_DIR)/index.h
 	$(CC) $(CC_OPTION) -c $< -o $@
+	$(CC) $(CC_OPTION) -MM $< > $(@:.o=.d)
 
+$(BIN_DIR)/%.o : $(SRC_DIR)/%.cpp $(SRC_DIR)/index.h
+	$(CC) $(CC_OPTION) -c $< -o $@
+	$(CC) $(CC_OPTION) -MM $< > $(@:.o=.d)
+	
 flatcc : $(LIB_DIR)/flatccrt.a
 
 $(LIB_DIR)/flatccrt.a : $(FLATCC_LIST)

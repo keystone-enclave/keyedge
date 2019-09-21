@@ -1,4 +1,4 @@
-#include "emitter.h"
+#include "index.h"
 
 // functions for generic emitting
 std::string emit(const std::string& str) {
