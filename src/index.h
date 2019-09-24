@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <queue>
+#include <regex>
 #include <set>
 #include <sstream>
 #include <string>
@@ -41,6 +42,8 @@
 
 // emitter
 #include "emitter.h"
+#include "emitter/basic.h"
+#include "emitter/serialization.h"
 
 #endif
 

@@ -12,18 +12,22 @@ LD_OPTION = -L $(LIBCLANG_LIB_DIR) -lclang -Wl,-rpath=$(LIBCLANG_LIB_DIR)
 KEYEDGE_INFORMATION_OBJECTS = type_information.o type_indicator.o element_information.o \
 function_information.o primitive_type_information.o struct_information.o \
 array_information.o pointer_information.o global.o
-KEYEDGE_OBJECTS = parser.o emitter.o main.o $(addprefix information/, $(KEYEDGE_INFORMATION_OBJECTS))
+KEYEDGE_EMITTER_OBJECTS = basic.o serialization.o
+KEYEDGE_OBJECTS = parser.o main.o \
+$(addprefix information/, $(KEYEDGE_INFORMATION_OBJECTS)) \
+$(addprefix emitter/, $(KEYEDGE_EMITTER_OBJECTS))
 KEYEDGE_LIST = $(addprefix $(BIN_DIR)/, $(KEYEDGE_OBJECTS))
 
 RISCV_CC = riscv64-unknown-linux-gnu-gcc
 FLATCC_CC_OPTION = -I$(FLATCC_DIR)/include -Wall -Werror
-FLATCC_OBJECTS = builder.o emitter.o refmap.o verifier.o
+FLATCC_OBJECTS = builder.o refmap.o verifier.o
 FLATCC_LIST = $(addprefix $(LIB_DIR)/, $(FLATCC_OBJECTS))
 
 all : directory keyedge flatcc
 
 directory :
 	mkdir -p $(BIN_DIR)/information
+	mkdir -p $(BIN_DIR)/emitter
 	mkdir -p $(BIN_DIR)
 	mkdir -p $(LIB_DIR)
 	
@@ -37,7 +41,11 @@ $(BIN_DIR)/keyedge : $(KEYEDGE_LIST)
 $(BIN_DIR)/information/%.o : $(BIN_DIR)/information/%.cpp $(SRC_DIR)/index.h
 	$(CC) $(CC_OPTION) -c $< -o $@
 	$(CC) $(CC_OPTION) -MM $< > $(@:.o=.d)
-
+	
+$(BIN_DIR)/emitter/%.o : $(BIN_DIR)/emitter/%.cpp $(SRC_DIR)/index.h
+	$(CC) $(CC_OPTION) -c $< -o $@
+	$(CC) $(CC_OPTION) -MM $< > $(@:.o=.d)
+	
 $(BIN_DIR)/%.o : $(SRC_DIR)/%.cpp $(SRC_DIR)/index.h
 	$(CC) $(CC_OPTION) -c $< -o $@
 	$(CC) $(CC_OPTION) -MM $< > $(@:.o=.d)

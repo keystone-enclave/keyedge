@@ -59,8 +59,7 @@ type_indicator parse_type(CXType type) {
 	if (clang_getArraySize(type) >= 0) {
 		type_indicator indicator = parse_type(clang_getArrayElementType(type));
 		if (typeid(**indicator) == typeid(array_information)) {
-			std::dynamic_pointer_cast<array_information>(*indicator) -> lengths.insert(
-				std::dynamic_pointer_cast<array_information>(*indicator) -> lengths.begin(),
+			std::dynamic_pointer_cast<array_information>(*indicator) -> lengths.push_back(
 				std::to_string(clang_getArraySize(type)));
 			return indicator;
 		}
