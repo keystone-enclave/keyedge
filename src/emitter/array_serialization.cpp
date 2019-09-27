@@ -49,7 +49,7 @@ std::string index(std::shared_ptr<array_information> type, size_t indent) {
 }
 
 // the name of the element, used to process the elements
-std::string element_name(std::shared_ptr<array_information> type, size_t indent) {
+std::string element_name(const std::string& name, std::shared_ptr<array_information> type, size_t indent) {
 	return emit("($(CONVERSION) $(NAME))$(SUFFIX)", {
 		{"$(CONVERSION)", (*type -> element_type) -> str() == "void" ? "(char*)" : ""},
 		{"$(NAME)", name},
@@ -89,7 +89,7 @@ std::string emit_serialize_array(const std::string& name, const std::string& ser
 					{"$(DATA_NAME)", data_name},
 					{"$(INDEX)", index(type, indent)}
 				});
-				return emit_serialize(element_name(type, indent), element_serialized_name,
+				return emit_serialize(element_name(name, type, indent), element_serialized_name,
 					*type -> element_type, indent + 1);
 			}()},
 			// the variable we want to serialize our data to
@@ -119,9 +119,9 @@ std::string emit_deserialize_array(const std::string& name, const std::string& s
 					// the length of the array, compressed to one-dimension
 					{"$(LENGTH)", length(type)},
 					// the type of size of each element
-					{"$(SIZE_TYPE)", (*type -> element) -> str() == "void" ? "char" :
-						(*type -> element) -> str()}
-				}) : "";},
+					{"$(SIZE_TYPE)", (*type -> element_type) -> str() == "void" ? "char" :
+						(*type -> element_type) -> str()}
+				}) : ""},
 			// the header of the loop
 			{"$(LOOP_BEGIN)", loop_begin(type, indent)},
 			// the deserialization of each element
@@ -131,7 +131,7 @@ std::string emit_deserialize_array(const std::string& name, const std::string& s
 					{"$(SERIALIZED_NAME)", serialized_name},
 					{"$(INDEX)", index(type, indent)}
 				});
-				return emit_deserialize(element_name(type, indent), element_serialized_name,
+				return emit_deserialize(element_name(name, type, indent), element_serialized_name,
 					*type -> element_type, indent + 1);
 			}()}
 		}, indent);

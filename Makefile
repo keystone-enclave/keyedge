@@ -12,7 +12,8 @@ LD_OPTION = -L $(LIBCLANG_LIB_DIR) -lclang -Wl,-rpath=$(LIBCLANG_LIB_DIR)
 KEYEDGE_INFORMATION_OBJECTS = type_information.o type_indicator.o element_information.o \
 function_information.o primitive_type_information.o struct_information.o \
 array_information.o pointer_information.o global.o
-KEYEDGE_EMITTER_OBJECTS = basic.o serialization.o
+KEYEDGE_EMITTER_OBJECTS = basic.o array_serialization.o struct_serialization.o \
+pointer_serialization.o serialization.o emit_fbs.o
 KEYEDGE_OBJECTS = parser.o main.o \
 $(addprefix information/, $(KEYEDGE_INFORMATION_OBJECTS)) \
 $(addprefix emitter/, $(KEYEDGE_EMITTER_OBJECTS))

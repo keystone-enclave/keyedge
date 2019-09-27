@@ -43,7 +43,11 @@
 // emitter
 #include "emitter.h"
 #include "emitter/basic.h"
+#include "emitter/array_serialization.h"
+#include "emitter/struct_serialization.h"
+#include "emitter/pointer_serialization.h"
 #include "emitter/serialization.h"
+#include "emitter/emit_fbs.h"
 
 #endif
 
