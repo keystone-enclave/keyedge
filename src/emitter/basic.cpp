@@ -12,7 +12,16 @@ std::string emit(const std::string& str,
 	std::regex eol("\n");
 	std::string ret = std::regex_replace(str, eol, std::string("\n") + emit_indent(indent));
 	for (auto& var_pair : var) {
-		std::regex rep(var_pair.first);
+		std::string rep_string;
+		for (char c : var_pair.first) {
+			if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+				rep_string.push_back(c);
+			} else {
+				rep_string.push_back('\\');
+				rep_string.push_back(c);
+			}
+		}
+		std::regex rep(rep_string);
 		ret = std::regex_replace(ret, rep, var_pair.second);
 	}
 	return ret;

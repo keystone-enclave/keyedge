@@ -27,7 +27,7 @@ std::string emit_deserialize_member(const std::string& name, const std::string& 
 	std::shared_ptr<element_information> member, size_t indent) {
 	return emit_deserialize(name + "." + member -> name,
 		type -> name + "_" + member -> name + "(" + serialized_name + ")",
-		*member -> type, indent + 1);
+		*member -> type, indent);
 }
 
 std::string emit_serialize_struct(const std::string& name, const std::string& serialized_name,
@@ -52,7 +52,8 @@ std::string emit_serialize_struct(const std::string& name, const std::string& se
 				std::string ret;
 				for (std::shared_ptr<element_information>& member : type -> members) {
 					if (!(member -> attr_flag & ATTRIBUTE_VLA)) {
-						ret += emit_serialize_member(name, member, indent);
+						ret += emit("\t$(EMIT)\n", {{"$(EMIT)",
+							emit_serialize_member(name, member, indent)}}, indent);
 					}
 				}
 				return ret;
@@ -79,7 +80,8 @@ std::string emit_serialize_struct(const std::string& name, const std::string& se
 								std::vector <std::string>(1, sizes.front());
 							sizes.pop();
 						}
-						ret += emit_serialize_member(name, member, indent);
+						ret += emit("\t$(EMIT)\n", {{"$(EMIT)",
+							emit_serialize_member(name, member, indent)}}, indent);
 					}
 				}
 				return ret;
@@ -114,7 +116,7 @@ std::string emit_deserialize_struct(const std::string& name, const std::string& 
 		"$(DESERIALIZE_NON_VLA_MEMBERS)"
 		"$(DESERIALIZE_VLA_MEMBERS)", {
 			// the deserialization of non-vla members
-			{"$(SERIALIZE_NON_VLA_MEMBERS)", [&]() -> std::string {
+			{"$(DESERIALIZE_NON_VLA_MEMBERS)", [&]() -> std::string {
 				std::string ret;
 				for (std::shared_ptr<element_information>& member : type -> members) {
 					if (!(member -> attr_flag & ATTRIBUTE_VLA)) {
@@ -124,7 +126,7 @@ std::string emit_deserialize_struct(const std::string& name, const std::string& 
 				return ret;
 			}()},
 			// the deserialization of vla members
-			{"$(SERIALIZE_VLA_MEMBERS)", [&]() -> std::string {
+			{"$(DESERIALIZE_VLA_MEMBERS)", [&]() -> std::string {
 				std::string ret;
 				for (std::shared_ptr<element_information>& member : type -> members) {
 					if (member -> attr_flag & ATTRIBUTE_VLA) {

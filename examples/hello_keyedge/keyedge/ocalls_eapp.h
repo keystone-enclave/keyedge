@@ -8,12 +8,12 @@
 int print_return_value(int msg) {
 	flatcc_builder_t builder;
 	flatcc_builder_init(&builder);
-	int __flatcc_reference_msg;
+	int __0_msg;
 	{
-		__flatcc_reference_msg = msg;
+		__0_msg = msg;
 	}
 	__ocall_wrapper_print_return_value_start_as_root(&builder);
-	__ocall_wrapper_print_return_value_msg_add(&builder, __flatcc_reference_msg);
+	__ocall_wrapper_print_return_value_msg_add(&builder, __0_msg);
 	__ocall_wrapper_print_return_value_end_as_root(&builder);
 	void* __buf;
 	size_t __size;
@@ -25,26 +25,26 @@ int print_return_value(int msg) {
 	int __return_value;
 	{
 		__return_value = __ocall_wrapper_print_return_value___return_value(__ocall_wrapper_print_return_value_as_root(return_address));
-	}
+	};
 	return __return_value;
 }
 int print_string(char *msg) {
 	flatcc_builder_t builder;
 	flatcc_builder_init(&builder);
 	size_t __0_msg_keyedge_size = strlen(msg) + 1;
-	flatbuffers_int8_vec_ref_t __flatcc_reference_msg;
+	flatbuffers_int8_vec_ref_t __0_msg;
 	{
-		char* __keyedge_array_data_1 = (char*) malloc((1 * (__0_msg_keyedge_size)) * sizeof(char));
-		for (size_t i1 = 0; i1 < (size_t) (__0_msg_keyedge_size); ++i1) {
+		char* __keyedge_array_data_2 = (char*) malloc(1 * (__0_msg_keyedge_size));
+		for (size_t i2_0 = 0; i2_0 < (size_t) (__0_msg_keyedge_size); ++i2_0) {
 			{
-				__keyedge_array_data_1[i1 + (__0_msg_keyedge_size) * (0)] = msg[i1];
+				__keyedge_array_data_2[i2_0 + (__0_msg_keyedge_size) * (0)] = ( msg)[i2_0];
 			}
 		}
-		__flatcc_reference_msg = flatbuffers_int8_vec_create(&builder, (signed char*)__keyedge_array_data_1, 1 * (__0_msg_keyedge_size));
-		free(__keyedge_array_data_1);
+		__0_msg = flatbuffers_int8_vec_create(&builder, (signed char*) __keyedge_array_data_2, 1 * (__0_msg_keyedge_size));
+		free(__keyedge_array_data_2);
 	}
 	__ocall_wrapper_print_string_start_as_root(&builder);
-	__ocall_wrapper_print_string_msg_add(&builder, __flatcc_reference_msg);
+	__ocall_wrapper_print_string_msg_add(&builder, __0_msg);
 	__ocall_wrapper_print_string_end_as_root(&builder);
 	void* __buf;
 	size_t __size;
@@ -56,6 +56,6 @@ int print_string(char *msg) {
 	int __return_value;
 	{
 		__return_value = __ocall_wrapper_print_string___return_value(__ocall_wrapper_print_string_as_root(return_address));
-	}
+	};
 	return __return_value;
 }

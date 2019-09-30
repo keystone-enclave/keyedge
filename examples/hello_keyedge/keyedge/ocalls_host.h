@@ -22,11 +22,11 @@ void __wrapper_print_return_value(void* buffer) {
 	ret_val = print_return_value(msg);
 	flatcc_builder_t builder;
 	flatcc_builder_init(&builder);
+	__ocall_wrapper_print_return_value_start_as_root(&builder);
 	int __flatcc_reference_ret_val;
 	{
 		__flatcc_reference_ret_val = ret_val;
 	}
-	__ocall_wrapper_print_return_value_start_as_root(&builder);
 	__ocall_wrapper_print_return_value___return_value_add(&builder, __flatcc_reference_ret_val);
 	__ocall_wrapper_print_return_value_end_as_root(&builder);
 	void* __buf;
@@ -53,13 +53,13 @@ void __wrapper_print_string(void* buffer) {
 	}
 	char *msg;
 	__ocall_wrapper_print_string_table_t function_reference = __ocall_wrapper_print_string_as_root((void *) call_args);
+size_t __0_msg_keyedge_size = flatbuffers_int8_vec_len(__ocall_wrapper_print_string_msg(function_reference));
 	flatbuffers_int8_vec_t __flatcc_reference_msg = __ocall_wrapper_print_string_msg(function_reference);
-	size_t __0_msg_keyedge_size = flatbuffers_int8_vec_len(__flatcc_reference_msg);
 	{
-		msg = (char *) malloc((__0_msg_keyedge_size) * sizeof(char));
-		for (size_t i1 = 0; i1 < (size_t) (__0_msg_keyedge_size); ++i1) {
+		msg = (char *) malloc((1 * (__0_msg_keyedge_size)) * sizeof(char));
+		for (size_t i2_0 = 0; i2_0 < (size_t) (__0_msg_keyedge_size); ++i2_0) {
 			{
-				msg[i1] = flatbuffers_int8_vec_at(__flatcc_reference_msg, i1 + (__0_msg_keyedge_size) * (0));
+				( msg)[i2_0] = flatbuffers_int8_vec_at(__flatcc_reference_msg, i2_0 + (__0_msg_keyedge_size) * (0));
 			}
 		}
 	}
@@ -67,11 +67,11 @@ void __wrapper_print_string(void* buffer) {
 	ret_val = print_string(msg);
 	flatcc_builder_t builder;
 	flatcc_builder_init(&builder);
+	__ocall_wrapper_print_string_start_as_root(&builder);
 	int __flatcc_reference_ret_val;
 	{
 		__flatcc_reference_ret_val = ret_val;
 	}
-	__ocall_wrapper_print_string_start_as_root(&builder);
 	__ocall_wrapper_print_string___return_value_add(&builder, __flatcc_reference_ret_val);
 	__ocall_wrapper_print_string_end_as_root(&builder);
 	void* __buf;

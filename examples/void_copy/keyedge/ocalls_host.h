@@ -22,11 +22,11 @@ void __wrapper_print_return_value(void* buffer) {
 	ret_val = print_return_value(msg);
 	flatcc_builder_t builder;
 	flatcc_builder_init(&builder);
+	__ocall_wrapper_print_return_value_start_as_root(&builder);
 	int __flatcc_reference_ret_val;
 	{
 		__flatcc_reference_ret_val = ret_val;
 	}
-	__ocall_wrapper_print_return_value_start_as_root(&builder);
 	__ocall_wrapper_print_return_value___return_value_add(&builder, __flatcc_reference_ret_val);
 	__ocall_wrapper_print_return_value_end_as_root(&builder);
 	void* __buf;
@@ -60,10 +60,10 @@ void __wrapper_print_string(void* buffer) {
 	}
 	flatbuffers_int8_vec_t __flatcc_reference_msg = __ocall_wrapper_print_string_msg(function_reference);
 	{
-		msg = (void *) malloc((size) * sizeof(char));
-		for (size_t i1 = 0; i1 < (size_t) (size); ++i1) {
+		msg = (void *) malloc((1 * (size)) * sizeof(char));
+		for (size_t i2_0 = 0; i2_0 < (size_t) (size); ++i2_0) {
 			{
-				((char*) msg)[i1] = flatbuffers_int8_vec_at(__flatcc_reference_msg, i1 + (size) * (0));
+				((char*) msg)[i2_0] = flatbuffers_int8_vec_at(__flatcc_reference_msg, i2_0 + (size) * (0));
 			}
 		}
 	}
@@ -71,11 +71,11 @@ void __wrapper_print_string(void* buffer) {
 	ret_val = print_string(msg, size);
 	flatcc_builder_t builder;
 	flatcc_builder_init(&builder);
+	__ocall_wrapper_print_string_start_as_root(&builder);
 	int __flatcc_reference_ret_val;
 	{
 		__flatcc_reference_ret_val = ret_val;
 	}
-	__ocall_wrapper_print_string_start_as_root(&builder);
 	__ocall_wrapper_print_string___return_value_add(&builder, __flatcc_reference_ret_val);
 	__ocall_wrapper_print_string_end_as_root(&builder);
 	void* __buf;

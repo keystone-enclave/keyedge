@@ -41,13 +41,15 @@
 #include "parser.h"
 
 // emitter
-#include "emitter.h"
 #include "emitter/basic.h"
 #include "emitter/array_serialization.h"
 #include "emitter/struct_serialization.h"
 #include "emitter/pointer_serialization.h"
 #include "emitter/serialization.h"
 #include "emitter/emit_fbs.h"
+#include "emitter/emit_common.h"
+#include "emitter/emit_eapp.h"
+#include "emitter/emit_host.h"
 
 #endif
 
