@@ -15,7 +15,7 @@ std::string emit_serialize(const std::string& name, const std::string& serialize
 					std::shared_ptr<struct_information> cast =
 						std::dynamic_pointer_cast<struct_information>(type);
 					return emit_serialize_struct(name, serialized_name, cast, indent + 1);
-				} else if (typeid(*type) == typeid(struct_information)) {
+				} else if (typeid(*type) == typeid(pointer_information)) {
 					std::shared_ptr<pointer_information> cast =
 						std::dynamic_pointer_cast<pointer_information>(type);
 					return emit_serialize_pointer(name, serialized_name, cast, indent + 1);
@@ -35,9 +35,9 @@ std::string emit_deserialize(const std::string& name, const std::string& seriali
 	std::shared_ptr<type_information> type, size_t indent) {
 	return emit(
 		"{\n"
-		"\t$(SERIALIZE)\n"
+		"\t$(DESERIALIZE)\n"
 		"}", {
-			{"$(SERIALIZE)", [&]() -> std::string {
+			{"$(DESERIALIZE)", [&]() -> std::string {
 				if (typeid(*type) == typeid(array_information)) {
 					std::shared_ptr<array_information> cast =
 						std::dynamic_pointer_cast<array_information>(type);
@@ -46,7 +46,7 @@ std::string emit_deserialize(const std::string& name, const std::string& seriali
 					std::shared_ptr<struct_information> cast =
 						std::dynamic_pointer_cast<struct_information>(type);
 					return emit_deserialize_struct(name, serialized_name, cast, indent + 1);
-				} else if (typeid(*type) == typeid(struct_information)) {
+				} else if (typeid(*type) == typeid(pointer_information)) {
 					std::shared_ptr<pointer_information> cast =
 						std::dynamic_pointer_cast<pointer_information>(type);
 					return emit_deserialize_pointer(name, serialized_name, cast, indent + 1);

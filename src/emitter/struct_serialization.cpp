@@ -25,9 +25,9 @@ std::string emit_serialize_member(const std::string& name, std::shared_ptr<eleme
 
 std::string emit_deserialize_member(const std::string& name, const std::string& serialized_name, std::shared_ptr<struct_information> type,
 	std::shared_ptr<element_information> member, size_t indent) {
-	return emit_deserialize(name + "." + member -> name,
+	return emit("$(EMIT)\n", {{"$(EMIT)", emit_deserialize(name + "." + member -> name,
 		type -> name + "_" + member -> name + "(" + serialized_name + ")",
-		*member -> type, indent);
+		*member -> type, indent)}}, indent);
 }
 
 std::string emit_serialize_struct(const std::string& name, const std::string& serialized_name,
@@ -52,8 +52,7 @@ std::string emit_serialize_struct(const std::string& name, const std::string& se
 				std::string ret;
 				for (std::shared_ptr<element_information>& member : type -> members) {
 					if (!(member -> attr_flag & ATTRIBUTE_VLA)) {
-						ret += emit("\t$(EMIT)\n", {{"$(EMIT)",
-							emit_serialize_member(name, member, indent)}}, indent);
+						ret += emit_serialize_member(name, member, indent);
 					}
 				}
 				return ret;
@@ -80,8 +79,7 @@ std::string emit_serialize_struct(const std::string& name, const std::string& se
 								std::vector <std::string>(1, sizes.front());
 							sizes.pop();
 						}
-						ret += emit("\t$(EMIT)\n", {{"$(EMIT)",
-							emit_serialize_member(name, member, indent)}}, indent);
+						ret += emit_serialize_member(name, member, indent);
 					}
 				}
 				return ret;
@@ -90,8 +88,8 @@ std::string emit_serialize_struct(const std::string& name, const std::string& se
 			{"$(BUILD_STRUCT)", [&]() -> std::string {
 				std::string ret;
 				for (std::shared_ptr<element_information>& member : type -> members) {
-					ret += emit("$(NAME)_$(MEMBER_NAME)_add(&builder, $(FLATCC_REFERENCE_VAR));\n", {
-						{"$(NAME)", name},
+					ret += emit("$(STRUCT_NAME)_$(MEMBER_NAME)_add(&builder, $(FLATCC_REFERENCE_VAR));\n", {
+						{"$(STRUCT_NAME)", type -> name},
 						{"$(MEMBER_NAME)", member -> name},
 						{"$(FLATCC_REFERENCE_VAR)", flatcc_reference_var(indent, member -> name)}
 					}, indent);
