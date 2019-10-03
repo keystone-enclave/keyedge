@@ -7,10 +7,10 @@ expect "yes/no" {
   expect "*?assword" { send "sifive\r" }
   } "*?assword" { send "sifive\r" }
 
-log_file -noappend $(KEYEDGE_SIR)/tests/output.log
+log_file -noappend output.log
 
 expect "# " { send "insmod keystone-driver.ko\r" }
-expect "# " { send "cd tests; ./tests.ke\r" }
+expect "# " { send "./$::env(TEST_FILE_NAME)/$::env(TEST_FILE_NAME).ke\r"}
 expect "# " { send "poweroff\r" }
 expect eof
 
