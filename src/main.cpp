@@ -11,7 +11,7 @@ int main(int argc, char* argv[]) {
 	for (int i = 0; i < argc - 2; ++i)
 		parse_argv[i] = argv[i + 2];
 	parse_argv[argc - 2] = "-D__KEYEDGE";
-	std::string include_arg = std::string ("-I") + std::string(std::getenv("KEYEDGE_DIR")) + "/include";
+	std::string include_arg = std::string ("-I") + std::string(std::getenv("KEYEDGE_DIR")) + "/target/include";
 	parse_argv[argc - 1] = include_arg.c_str();
 
 	// set up LibClang

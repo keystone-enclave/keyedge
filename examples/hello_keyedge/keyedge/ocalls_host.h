@@ -51,16 +51,15 @@ void __wrapper_print_string(void* buffer) {
 		edge_call -> return_data.call_status = CALL_STATUS_BAD_OFFSET;
 		return;
 	}
-	int *msg;
+	char *msg;
 	__ocall_wrapper_print_string_table_t function_reference = __ocall_wrapper_print_string_as_root((void *) call_args);
-	__pointer_flatbuffers_int32_table_t __flatcc_reference_msg = __ocall_wrapper_print_string_msg(function_reference);
+size_t __0_msg_keyedge_size = flatbuffers_int8_vec_len(__ocall_wrapper_print_string_msg(function_reference));
+	flatbuffers_int8_vec_t __flatcc_reference_msg = __ocall_wrapper_print_string_msg(function_reference);
 	{
-		if (__pointer_flatbuffers_int32___is_null(__flatcc_reference_msg)) {
-			msg = 0;
-		} else {
-			msg = (int *) malloc(sizeof(int));
+		msg = (char *) malloc((1 * (__0_msg_keyedge_size)) * sizeof(char));
+		for (size_t i2_0 = 0; i2_0 < (size_t) (__0_msg_keyedge_size); ++i2_0) {
 			{
-				(*msg) = __pointer_flatbuffers_int32___data(__flatcc_reference_msg);
+				( msg)[i2_0] = flatbuffers_int8_vec_at(__flatcc_reference_msg, i2_0 + (__0_msg_keyedge_size) * (0));
 			}
 		}
 	}
