@@ -19,10 +19,10 @@
 #endif
 
 
-typedef const struct __pointer_flatbuffers_int8_table *__pointer_flatbuffers_int8_table_t;
-typedef struct __pointer_flatbuffers_int8_table *__pointer_flatbuffers_int8_mutable_table_t;
-typedef const flatbuffers_uoffset_t *__pointer_flatbuffers_int8_vec_t;
-typedef flatbuffers_uoffset_t *__pointer_flatbuffers_int8_mutable_vec_t;
+typedef const struct __pointer_flatbuffers_int32_table *__pointer_flatbuffers_int32_table_t;
+typedef struct __pointer_flatbuffers_int32_table *__pointer_flatbuffers_int32_mutable_table_t;
+typedef const flatbuffers_uoffset_t *__pointer_flatbuffers_int32_vec_t;
+typedef flatbuffers_uoffset_t *__pointer_flatbuffers_int32_mutable_vec_t;
 typedef const struct __ocall_wrapper_print_return_value_table *__ocall_wrapper_print_return_value_table_t;
 typedef struct __ocall_wrapper_print_return_value_table *__ocall_wrapper_print_return_value_mutable_table_t;
 typedef const flatbuffers_uoffset_t *__ocall_wrapper_print_return_value_vec_t;
@@ -31,11 +31,11 @@ typedef const struct __ocall_wrapper_print_string_table *__ocall_wrapper_print_s
 typedef struct __ocall_wrapper_print_string_table *__ocall_wrapper_print_string_mutable_table_t;
 typedef const flatbuffers_uoffset_t *__ocall_wrapper_print_string_vec_t;
 typedef flatbuffers_uoffset_t *__ocall_wrapper_print_string_mutable_vec_t;
-#ifndef __pointer_flatbuffers_int8_identifier
-#define __pointer_flatbuffers_int8_identifier flatbuffers_identifier
+#ifndef __pointer_flatbuffers_int32_identifier
+#define __pointer_flatbuffers_int32_identifier flatbuffers_identifier
 #endif
-#define __pointer_flatbuffers_int8_type_hash ((flatbuffers_thash_t)0x9b4a4145)
-#define __pointer_flatbuffers_int8_type_identifier "\x45\x41\x4a\x9b"
+#define __pointer_flatbuffers_int32_type_hash ((flatbuffers_thash_t)0x6af10da2)
+#define __pointer_flatbuffers_int32_type_identifier "\xa2\x0d\xf1\x6a"
 #ifndef __ocall_wrapper_print_return_value_identifier
 #define __ocall_wrapper_print_return_value_identifier flatbuffers_identifier
 #endif
@@ -49,16 +49,16 @@ typedef flatbuffers_uoffset_t *__ocall_wrapper_print_string_mutable_vec_t;
 
 
 
-struct __pointer_flatbuffers_int8_table { uint8_t unused__; };
+struct __pointer_flatbuffers_int32_table { uint8_t unused__; };
 
-static inline size_t __pointer_flatbuffers_int8_vec_len(__pointer_flatbuffers_int8_vec_t vec)
+static inline size_t __pointer_flatbuffers_int32_vec_len(__pointer_flatbuffers_int32_vec_t vec)
 __flatbuffers_vec_len(vec)
-static inline __pointer_flatbuffers_int8_table_t __pointer_flatbuffers_int8_vec_at(__pointer_flatbuffers_int8_vec_t vec, size_t i)
-__flatbuffers_offset_vec_at(__pointer_flatbuffers_int8_table_t, vec, i, 0)
-__flatbuffers_table_as_root(__pointer_flatbuffers_int8)
+static inline __pointer_flatbuffers_int32_table_t __pointer_flatbuffers_int32_vec_at(__pointer_flatbuffers_int32_vec_t vec, size_t i)
+__flatbuffers_offset_vec_at(__pointer_flatbuffers_int32_table_t, vec, i, 0)
+__flatbuffers_table_as_root(__pointer_flatbuffers_int32)
 
-__flatbuffers_define_scalar_field(0, __pointer_flatbuffers_int8, __is_null, flatbuffers_bool, flatbuffers_bool_t, UINT8_C(0))
-__flatbuffers_define_scalar_field(1, __pointer_flatbuffers_int8, __data, flatbuffers_int8, int8_t, INT8_C(0))
+__flatbuffers_define_scalar_field(0, __pointer_flatbuffers_int32, __is_null, flatbuffers_bool, flatbuffers_bool_t, UINT8_C(0))
+__flatbuffers_define_scalar_field(1, __pointer_flatbuffers_int32, __data, flatbuffers_int32, int32_t, INT32_C(0))
 
 struct __ocall_wrapper_print_return_value_table { uint8_t unused__; };
 
@@ -79,7 +79,7 @@ static inline __ocall_wrapper_print_string_table_t __ocall_wrapper_print_string_
 __flatbuffers_offset_vec_at(__ocall_wrapper_print_string_table_t, vec, i, 0)
 __flatbuffers_table_as_root(__ocall_wrapper_print_string)
 
-__flatbuffers_define_vector_field(0, __ocall_wrapper_print_string, msg, flatbuffers_int8_vec_t, 0)
+__flatbuffers_define_table_field(0, __ocall_wrapper_print_string, msg, __pointer_flatbuffers_int32_table_t, 0)
 __flatbuffers_define_scalar_field(1, __ocall_wrapper_print_string, __return_value, flatbuffers_int32, int32_t, INT32_C(0))
 
 

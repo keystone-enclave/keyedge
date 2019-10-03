@@ -1,12 +1,13 @@
 BIN_DIR = bin
 LIB_DIR = lib
+INCLUDE_DIR = include
 SRC_DIR = src
 
 LIBCLANG_INCLUDE_DIR = $$HOME/llvm-project/clang/include
 LIBCLANG_LIB_DIR = $$HOME/llvm-project/build/lib
 
 CC = g++
-CC_OPTION = -std=c++14 -g -Wall -I $(SRC_DIR) -I $(LIBCLANG_INCLUDE_DIR)
+CC_OPTION = -std=c++14 -g -Wall -I $(INCLUDE_DIR) -I $(LIBCLANG_INCLUDE_DIR)
 LD_OPTION = -L $(LIBCLANG_LIB_DIR) -lclang -Wl,-rpath=$(LIBCLANG_LIB_DIR)
 
 KEYEDGE_INFORMATION_OBJECTS = type_information.o type_indicator.o element_information.o \
@@ -39,15 +40,15 @@ keyedge : $(BIN_DIR)/keyedge
 $(BIN_DIR)/keyedge : $(KEYEDGE_LIST)
 	$(CC) $(KEYEDGE_LIST) -o $@ $(LD_OPTION)
 
-$(BIN_DIR)/information/%.o : $(BIN_DIR)/information/%.cpp $(SRC_DIR)/index.h
+$(BIN_DIR)/information/%.o : $(SRC_DIR)/information/%.cpp $(INCLUDE_DIR)/index.h
 	$(CC) $(CC_OPTION) -c $< -o $@
 	$(CC) $(CC_OPTION) -MM $< > $(@:.o=.d)
 	
-$(BIN_DIR)/emitter/%.o : $(BIN_DIR)/emitter/%.cpp $(SRC_DIR)/index.h
+$(BIN_DIR)/emitter/%.o : $(SRC_DIR)/emitter/%.cpp $(INCLUDE_DIR)/index.h
 	$(CC) $(CC_OPTION) -c $< -o $@
 	$(CC) $(CC_OPTION) -MM $< > $(@:.o=.d)
 	
-$(BIN_DIR)/%.o : $(SRC_DIR)/%.cpp $(SRC_DIR)/index.h
+$(BIN_DIR)/%.o : $(SRC_DIR)/%.cpp $(INCLUDE_DIR)/index.h
 	$(CC) $(CC_OPTION) -c $< -o $@
 	$(CC) $(CC_OPTION) -MM $< > $(@:.o=.d)
 	

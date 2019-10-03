@@ -9,36 +9,36 @@
 #include "flatcc/flatcc_verifier.h"
 #include "flatcc/flatcc_prologue.h"
 
-static int __pointer_flatbuffers_int8_verify_table(flatcc_table_verifier_descriptor_t *td);
+static int __pointer_flatbuffers_int32_verify_table(flatcc_table_verifier_descriptor_t *td);
 static int __ocall_wrapper_print_return_value_verify_table(flatcc_table_verifier_descriptor_t *td);
 static int __ocall_wrapper_print_string_verify_table(flatcc_table_verifier_descriptor_t *td);
 
-static int __pointer_flatbuffers_int8_verify_table(flatcc_table_verifier_descriptor_t *td)
+static int __pointer_flatbuffers_int32_verify_table(flatcc_table_verifier_descriptor_t *td)
 {
     int ret;
     if ((ret = flatcc_verify_field(td, 0, 1, 1) /* __is_null */)) return ret;
-    if ((ret = flatcc_verify_field(td, 1, 1, 1) /* __data */)) return ret;
+    if ((ret = flatcc_verify_field(td, 1, 4, 4) /* __data */)) return ret;
     return flatcc_verify_ok;
 }
 
-static inline int __pointer_flatbuffers_int8_verify_as_root(const void *buf, size_t bufsiz)
+static inline int __pointer_flatbuffers_int32_verify_as_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root(buf, bufsiz, __pointer_flatbuffers_int8_identifier, &__pointer_flatbuffers_int8_verify_table);
+    return flatcc_verify_table_as_root(buf, bufsiz, __pointer_flatbuffers_int32_identifier, &__pointer_flatbuffers_int32_verify_table);
 }
 
-static inline int __pointer_flatbuffers_int8_verify_as_typed_root(const void *buf, size_t bufsiz)
+static inline int __pointer_flatbuffers_int32_verify_as_typed_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root(buf, bufsiz, __pointer_flatbuffers_int8_type_identifier, &__pointer_flatbuffers_int8_verify_table);
+    return flatcc_verify_table_as_root(buf, bufsiz, __pointer_flatbuffers_int32_type_identifier, &__pointer_flatbuffers_int32_verify_table);
 }
 
-static inline int __pointer_flatbuffers_int8_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
+static inline int __pointer_flatbuffers_int32_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
 {
-    return flatcc_verify_table_as_root(buf, bufsiz, fid, &__pointer_flatbuffers_int8_verify_table);
+    return flatcc_verify_table_as_root(buf, bufsiz, fid, &__pointer_flatbuffers_int32_verify_table);
 }
 
-static inline int __pointer_flatbuffers_int8_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+static inline int __pointer_flatbuffers_int32_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
-    return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &__pointer_flatbuffers_int8_verify_table);
+    return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &__pointer_flatbuffers_int32_verify_table);
 }
 
 static int __ocall_wrapper_print_return_value_verify_table(flatcc_table_verifier_descriptor_t *td)
@@ -72,7 +72,7 @@ static inline int __ocall_wrapper_print_return_value_verify_as_root_with_type_ha
 static int __ocall_wrapper_print_string_verify_table(flatcc_table_verifier_descriptor_t *td)
 {
     int ret;
-    if ((ret = flatcc_verify_vector_field(td, 0, 0, 1, 1, INT64_C(4294967295)) /* msg */)) return ret;
+    if ((ret = flatcc_verify_table_field(td, 0, 0, &__pointer_flatbuffers_int32_verify_table) /* msg */)) return ret;
     if ((ret = flatcc_verify_field(td, 1, 4, 4) /* __return_value */)) return ret;
     return flatcc_verify_ok;
 }
