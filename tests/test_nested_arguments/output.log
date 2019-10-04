@@ -1,0 +1,7 @@
+
+# insmod keystone-driver.ko
+# ./test_nested_aguments/test_nested_aguments.ke
+-sh: ./test_nested_aguments/test_nested_aguments.ke: not found
+# poweroff
+# Connection to localhost closed by remote host.
+Connection to localhost closed.

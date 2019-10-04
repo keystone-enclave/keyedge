@@ -133,10 +133,10 @@ std::string emit_deserialize_struct(const std::string& name, const std::string& 
 								{"$(INDENT)", std::to_string(indent)},
 								{"$(MEMBER_NAME)", member -> name}
 							});
-							ret += emit("size_t $(VAR_NAME) = $(MEMBER_FLATCC_PREFIX)_len($(NAME)_$(MEMBER_NAME)($(SERIALIZED_NAME)));\n", {
+							ret += emit("size_t $(VAR_NAME) = $(MEMBER_FLATCC_PREFIX)_len($(STRUCT_NAME)_$(MEMBER_NAME)($(SERIALIZED_NAME)));\n", {
 								{"$(VAR_NAME)", var_name},
 								{"$(MEMBER_FLATCC_PREFIX)", (*member -> type) -> flatcc_prefix()},
-								{"$(NAME)", name},
+								{"$(STRUCT_NAME)", type -> name},
 								{"$(MEMBER_NAME)", member -> name},
 								{"$(SERIALIZED_NAME)", serialized_name}
 							}, indent);

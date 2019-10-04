@@ -74,7 +74,7 @@ std::string emit_serialize_array(const std::string& name, const std::string& ser
 	// the name of the temporary array holding all elements
 	std::string data_name = emit("__keyedge_array_data_$(INDENT)", {{"$(INDENT)", std::to_string(indent)}});
 	return emit(
-		"$(DATA_TYPE)* $(DATA_NAME) = ($(DATA_TYPE)*) malloc($(LENGTH));\n"
+		"$(DATA_TYPE)* $(DATA_NAME) = ($(DATA_TYPE)*) malloc($(LENGTH) * sizeof($(DATA_TYPE)));\n"
 		"$(LOOP_BEGIN){\n"
 		"\t$(SERIALIZE_ELEMENT)\n"
 		"}\n"
