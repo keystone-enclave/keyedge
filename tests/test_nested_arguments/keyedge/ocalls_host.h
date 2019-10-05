@@ -98,14 +98,14 @@ void __wrapper_test_two_dimensional_array(void* buffer) {
 		edge_call -> return_data.call_status = CALL_STATUS_BAD_OFFSET;
 		return;
 	}
-	int arr[4][5];
+	int arr[2][3];
 	__ocall_wrapper_test_two_dimensional_array_table_t function_reference = __ocall_wrapper_test_two_dimensional_array_as_root((void *) call_args);
 	flatbuffers_int32_vec_t __flatcc_reference_arr = __ocall_wrapper_test_two_dimensional_array_arr(function_reference);
 	{
 		
-		for (size_t i2_0 = 0; i2_0 < (size_t) (5); ++i2_0) for (size_t i2_1 = 0; i2_1 < (size_t) (4); ++i2_1) {
+		for (size_t i2_0 = 0; i2_0 < (size_t) (3); ++i2_0) for (size_t i2_1 = 0; i2_1 < (size_t) (2); ++i2_1) {
 			{
-				( arr)[i2_1][i2_0] = flatbuffers_int32_vec_at(__flatcc_reference_arr, i2_0 + (5) * (i2_1 + (4) * (0)));
+				( arr)[i2_1][i2_0] = flatbuffers_int32_vec_at(__flatcc_reference_arr, i2_0 + (3) * (i2_1 + (2) * (0)));
 			}
 		}
 	}

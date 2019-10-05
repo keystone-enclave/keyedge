@@ -1,9 +1,9 @@
 #include "ocalls_host.h"
 
-int test_two_dimensional_array(int arr[4][5]) {
+int test_two_dimensional_array(int arr[2][3]) {
 	int cnt = 0;
-	for (int i = 0; i < 4; ++i)
-		for (int j = 0; j < 5; ++j)
+	for (int i = 0; i < 2; ++i)
+		for (int j = 0; j < 3; ++j)
 			if (arr[i][j] != cnt++) {
 				puts("[FAIL] Two dimensional array test failed.");
 				return 1;

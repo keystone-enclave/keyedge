@@ -100,18 +100,18 @@ int test_nested_struct(nest1 n) {
 	};
 	return __return_value;
 }
-int test_two_dimensional_array(int arr[4][5]) {
+int test_two_dimensional_array(int arr[2][3]) {
 	flatcc_builder_t builder;
 	flatcc_builder_init(&builder);
 	flatbuffers_int32_vec_ref_t __0_arr;
 	{
-		int* __keyedge_array_data_2 = (int*) malloc(1 * (5) * (4) * sizeof(int));
-		for (size_t i2_0 = 0; i2_0 < (size_t) (5); ++i2_0) for (size_t i2_1 = 0; i2_1 < (size_t) (4); ++i2_1) {
+		int* __keyedge_array_data_2 = (int*) malloc(1 * (3) * (2) * sizeof(int));
+		for (size_t i2_0 = 0; i2_0 < (size_t) (3); ++i2_0) for (size_t i2_1 = 0; i2_1 < (size_t) (2); ++i2_1) {
 			{
-				__keyedge_array_data_2[i2_0 + (5) * (i2_1 + (4) * (0))] = ( arr)[i2_1][i2_0];
+				__keyedge_array_data_2[i2_0 + (3) * (i2_1 + (2) * (0))] = ( arr)[i2_1][i2_0];
 			}
 		}
-		__0_arr = flatbuffers_int32_vec_create(&builder,  __keyedge_array_data_2, 1 * (5) * (4));
+		__0_arr = flatbuffers_int32_vec_create(&builder,  __keyedge_array_data_2, 1 * (3) * (2));
 		free(__keyedge_array_data_2);
 	}
 	__ocall_wrapper_test_two_dimensional_array_start_as_root(&builder);
