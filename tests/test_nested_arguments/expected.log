@@ -1,12 +1,12 @@
 
 # insmod keystone-driver.ko
-# ./test_hello_keyedge/test_hello_keyedge.ke
-Verifying archive integrity...     0%    25%    50%    75%  100%   All good.
-Uncompressing Keystone vault archive     0%    25%    50%    75%  100%  
+# ./test_nested_arguments/test_nested_arguments.ke
+Verifying archive integrity...     0%    34%    68%  100%   All good.
+Uncompressing Keystone vault archive     0%    34%    68%  100%  
 Registering...
 Running the enclave...
-Hello Keyedge!
-The function previously called returned 15.
+[PASS] Two dimensional array test succeeded.
+[PASS] Nested struct test succeeded.
 # poweroff
 # Connection to localhost closed by remote host.
 Connection to localhost closed.

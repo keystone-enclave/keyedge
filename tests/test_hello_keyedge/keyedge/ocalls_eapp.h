@@ -34,7 +34,7 @@ int print_string(char *msg) {
 	size_t __0_msg_keyedge_size = strlen(msg) + 1;
 	flatbuffers_int8_vec_ref_t __0_msg;
 	{
-		char* __keyedge_array_data_2 = (char*) malloc(1 * (__0_msg_keyedge_size));
+		char* __keyedge_array_data_2 = (char*) malloc(1 * (__0_msg_keyedge_size) * sizeof(char));
 		for (size_t i2_0 = 0; i2_0 < (size_t) (__0_msg_keyedge_size); ++i2_0) {
 			{
 				__keyedge_array_data_2[i2_0 + (__0_msg_keyedge_size) * (0)] = ( msg)[i2_0];
