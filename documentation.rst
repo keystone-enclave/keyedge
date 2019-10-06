@@ -31,6 +31,7 @@ You need to have a copy of
 serialization. The following snippet may be used to obtain it.
 
 ::
+
 	git clone https://github.com/dvidelabs/flatcc.git
 	cd flatcc
 	scripts/initbuild.sh make
