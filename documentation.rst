@@ -13,9 +13,10 @@ Installation
 Keystone
 ^^^^^^^^
 
-You need to have Keystone_ built if you have not done so already -
-read its ``README``'s Quick Start part.
-.. _Keystone: https://github.com/keystone-enclave/keystone
+You need to have
+`Keystone <https://github.com/keystone-enclave/keystone>`_ built if
+you have not done so already - read its ``README``'s Quick Start
+part.
 
 You also need to set the environment variable ``$KEYSTONE_SDK_DIR``
 to the ``/sdk`` directory of the repository, and add RISC-V compilers
@@ -25,16 +26,15 @@ for how it is typically done.
 Flatcc
 ^^^^^^
 
-You need to have a copy of Flatcc_, which is used in serialization.
-The following snippet may be used to obtain it.
-.. _Flatcc: https://github.com/dvidelabs/flatcc
+You need to have a copy of
+`Flatcc <https://github.com/dvidelabs/flatcc>`_, which is used in
+serialization. The following snippet may be used to obtain it.
 
-```
-git clone https://github.com/dvidelabs/flatcc.git
-cd flatcc
-scripts/initbuild.sh make
-scripts/build.sh
-```
+::
+	git clone https://github.com/dvidelabs/flatcc.git
+	cd flatcc
+	scripts/initbuild.sh make
+	scripts/build.sh
 
 After the installation is complete, set the environment variable
 ``$FLATCC_DIR`` to the root of the repository, for example
@@ -43,9 +43,9 @@ After the installation is complete, set the environment variable
 LibClang
 ^^^^^^^^
 
-You need to have a working Clang_. This tool is built on Clang
-\10.0.0, but other versions might work.
-.. _Clang: https://clang.llvm.org/get_started.html
+You need to have a working
+'Clang <https://clang.llvm.org/get_started.html>'_. This tool is
+built on Clang 10.0.0, but other versions might work.
 
 Set the environment variable ``$LIBCLANG_INCLUDE_DIR`` to the Clang
 ``include`` directory, where ``clang-c/Index.h`` may be included,
