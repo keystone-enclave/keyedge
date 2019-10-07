@@ -153,3 +153,76 @@ Now that we have finished every part, simply run
 we can then execute ``make image`` under Keystone directory to build
 the QEMU image, and test the tutorial out via QEMU.
 
+Header File Specification
+-------------------------
+
+In general, the header file ``keyedge/ocalls.h`` should be written
+in a way that conforms to the C standard, as it is directly used by
+both enclave and host application for the edge call signature.
+None of the functions in the other file included by the header file
+will be treated as edge calls, but all of the structs will be
+profiled and can be used in an edge call.
+
+Besides, Keyedge provides a few modifiers to function parameters
+that do not interfere with the enclave's edge call and the host's
+function implementation, but rather specifies how a certain parameter
+should be passed from the enclave to the host, and vice-versa, as is
+demonstrated in the tutorial with ``keyedge_str``, a modifier that
+tells Keyedge to serialize the parameter as a C-styled string. A list
+of currently supported modifiers is given below:
+
+keyedge_size
+^^^^^^^^^^^^
+
+This modifier specifies the length of a variable-length array when
+used in conjunction with ``keyedge_vla``. The type of the parameter
+must be an integral type.
+
+keyedge_str
+^^^^^^^^^^^
+
+This modifier specifies that the parameter in question is a C-styled
+string. Keyedge will use ``strlen`` to fetch the parameter's length,
+and copy that many elements to the shared buffer. The type of the
+parameter must be ``char*``.
+
+keyedge_vla
+^^^^^^^^^^^
+
+This modifier specifies that the parameter in question is a variable-
+length array. Keyedge will use the ``keyedge_size`` modified
+parameter to determine its length. Such parameter must exist in the
+same scope with the variable-length array parameter, be it a struct
+definition or a function declaration. The sizes will correspond to
+the arrays one by one, if multiple exists. The parameter must be a
+pointer. Specifically, the parameter may be ``void*``, in which case
+specifies a chunk of memory with no specific type.
+
+A few examples of the variable-length array are given below:
+
+.. code-block:: cpp
+
+	struct data_block {
+		keyedge_vla void* data;
+		keyedge_size int size;
+	};
+	
+	void marshall_data_block(data_block d);
+
+.. code-block:: cpp
+
+	void copy_two_arrays(keyedge_size int size1, keyedge_vla int* vla1,
+		keyedge_size int size2, keyedge_vla int* vla2);
+		
+Known not supported features
+----------------------------
+
+The following features are known not to be supported in the current
+version of Keyedge:
+
+#. Function parameters. They can be converted to ``unsigned int`` or
+``unsigned long long`` is the need to pass them around arises.
+
+#. ``long double`` type. FlatCC provides no equivalent of the 128-bit
+float type, so it is not supported as of now.
+
