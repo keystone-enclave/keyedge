@@ -221,8 +221,8 @@ The following features are known not to be supported in the current
 version of Keyedge:
 
 - Function parameters. They can be converted to ``unsigned int`` or
-``unsigned long long`` is the need to pass them around arises.
+  ``unsigned long long`` if the need to pass them around arises.
 
 - ``long double`` type. FlatCC provides no equivalent of the 128-bit
-float type, so it is not supported as of now.
+  float type, so it is not supported as of now.
 
