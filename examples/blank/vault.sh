@@ -5,7 +5,7 @@ set -e
 ################################################################
 #                   Replace the variables                      #
 ################################################################
-NAME=skeleton
+NAME=blank
 VAULT_DIR=`dirname $0`
 BUILD_COMMAND="make -C eapp && make -C host"
 OUTPUT_DIR=$KEYSTONE_SDK_DIR/../buildroot_overlay/root/$NAME

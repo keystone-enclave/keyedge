@@ -11,6 +11,10 @@ int main(int argc, char** argv) {
 
 	enclave.registerOcallDispatch(incoming_call_dispatch);
 
+	/* We must specifically register functions we want to export to the
+		enclave. */
+	register_functions();
+	
 	edge_call_init_internals((uintptr_t)enclave.getSharedBuffer(),
 		enclave.getSharedBufferSize());
 	enclave.run();
