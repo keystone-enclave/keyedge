@@ -1,0 +1,8 @@
+insmod keystone-driver.ko
+# ./nested_struct/nested_struct.ke
+Verifying archive integrity...     0%    62%  100%   All good.
+Uncompressing Keystone vault archive     0%    62%  100%  
+Registering...
+Running the enclave...
+[PASS] Nested struct test succeeded.
+# 

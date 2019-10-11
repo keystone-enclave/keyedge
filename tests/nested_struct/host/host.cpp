@@ -1,18 +1,6 @@
 #include "ocalls_host.h"
 
-int test_two_dimensional_array(int arr[2][3]) {
-	int cnt = 0;
-	for (int i = 0; i < 2; ++i)
-		for (int j = 0; j < 3; ++j)
-			if (arr[i][j] != cnt++) {
-				puts("[FAIL] Two dimensional array test failed.");
-				return 1;
-			}
-	puts("[PASS] Two dimensional array test succeeded.");
-	return 0;
-}
-
-int test_nested_struct(nest1 n) {
+int test_nested_struct(nest1 n) {	
 	if (strcmp(n.str, "nest1") || strcmp(n.n -> str, "nest2") || strcmp(n.n -> n -> str, "nest3")) {
 		puts("[FAIL] Nested struct test failed.");
 		return 1;

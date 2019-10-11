@@ -6,11 +6,15 @@ expect "yes/no" {
   send "yes\r"
   expect "*?assword" { send "sifive\r" }
   } "*?assword" { send "sifive\r" }
-
-log_file -noappend output.log
-
+  
 expect "# " { send "insmod keystone-driver.ko\r" }
-expect "# " { send "./$::env(TEST_FILE_NAME)/$::env(TEST_FILE_NAME).ke\r"}
-expect "# " { send "poweroff\r" }
+log_file -noappend output.log
+expect "# " { send "./$::env(TEST_FILE_NAME)/$::env(TEST_FILE_NAME).ke\r" }
+
+expect "# " {
+  log_file
+  send "poweroff\r" 
+  }
+
 expect eof
 
