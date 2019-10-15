@@ -1,0 +1,8 @@
+insmod keystone-driver.ko
+# ./double_pointer/double_pointer.ke
+Verifying archive integrity...     0%    66%  100%   All good.
+Uncompressing Keystone vault archive     0%    66%  100%  
+Registering...
+Running the enclave...
+[PASS] Double pointer test succeeded.
+# 
