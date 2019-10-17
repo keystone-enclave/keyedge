@@ -23,37 +23,14 @@ to the ``/sdk`` directory of the repository, and add RISC-V compilers
 to ``$PATH`` - check ``source.sh`` under the root of its repository
 for how it is typically done.
 
-Flatcc
-^^^^^^
-
-You need to have a copy of
-`Flatcc <https://github.com/dvidelabs/flatcc>`_, which is used in
-serialization. The following snippet may be used to obtain it.
-
-::
-
-	git clone https://github.com/dvidelabs/flatcc.git
-	cd flatcc
-	scripts/initbuild.sh make
-	scripts/build.sh
-
-After the installation is complete, set the environment variable
-``$FLATCC_DIR`` to the root of the repository, for example
-``$HOME/flatcc``.
-
 LibClang
 ^^^^^^^^
 
-You need to have a working
-'Clang <https://clang.llvm.org/get_started.html>'_. This tool is
-built on Clang 10.0.0, but other versions might work.
+You need to have a working LibClang. On Ubuntu, you can get it by:
 
-Set the environment variable ``$LIBCLANG_INCLUDE_DIR`` to the Clang
-``include`` directory, where ``clang-c/Index.h`` may be included,
-typically ``<some-path>/llvm-project/clang/include``.
+::
 
-Set the environment variable ``$LIBCLANG_LIB_DIR`` to the Clang lib
-directory, typically ``<some-path>/llvm-project/build/lib``.
+	sudo apt install libclang-dev
 
 Build
 ^^^^^
