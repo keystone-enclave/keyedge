@@ -7,7 +7,7 @@ SDK_INCLUDE_APP_DIR = $(SDK_LIB_DIR)/app/include
 SDK_INCLUDE_EDGE_DIR = $(SDK_LIB_DIR)/edge/include
 KEYEDGE_INCLUDE_DIR = $(KEYEDGE_DIR)/target/include
 PROJECT_KEYEDGE_INClUDE_DIR = ../keyedge
-FLATCC_INCLUDE_DIR = $(FLATCC_DIR)/include
+FLATCC_INCLUDE_DIR = $(KEYEDGE_DIR)/flatcc/include
 
 APP_LDS = app.lds
 

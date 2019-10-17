@@ -21,6 +21,7 @@ $(addprefix emitter/, $(KEYEDGE_EMITTER_OBJECTS))
 KEYEDGE_LIST = $(addprefix $(BIN_DIR)/, $(KEYEDGE_OBJECTS))
 
 RISCV_CC = riscv64-unknown-linux-gnu-gcc
+FLATCC_DIR = flatcc
 FLATCC_CC_OPTION = -I$(FLATCC_DIR)/include -Wall -Werror
 FLATCC_OBJECTS = builder.o emitter.o refmap.o verifier.o
 FLATCC_LIST = $(addprefix $(LIB_DIR)/, $(FLATCC_OBJECTS))
@@ -52,7 +53,11 @@ $(BIN_DIR)/%.o : $(SRC_DIR)/%.cpp $(INCLUDE_DIR)/index.h
 	$(CC) $(CC_OPTION) -c $< -o $@
 	$(CC) $(CC_OPTION) -MM $< > $(@:.o=.d)
 	
-flatcc : $(LIB_DIR)/flatccrt.a
+flatcc : build_flatcc $(LIB_DIR)/flatccrt.a
+
+build_flatcc :
+	cd flatcc && ./scripts/initbuild.sh make
+	cd flatcc && ./scripts/build.sh
 
 $(LIB_DIR)/flatccrt.a : $(FLATCC_LIST)
 	ar ru $(LIB_DIR)/flatccrt.a $(FLATCC_LIST)
