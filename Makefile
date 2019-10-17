@@ -3,8 +3,8 @@ LIB_DIR = lib
 INCLUDE_DIR = include
 SRC_DIR = src
 
-LIBCLANG_INCLUDE_DIR = $$HOME/llvm-project/clang/include
-LIBCLANG_LIB_DIR = $$HOME/llvm-project/build/lib
+LIBCLANG_INCLUDE_DIR = /usr/lib/llvm-6.0/include
+LIBCLANG_LIB_DIR = /usr/lib/llvm-6.0/lib
 
 CC = g++
 CC_OPTION = -std=c++14 -g -Wall -I $(INCLUDE_DIR) -I $(LIBCLANG_INCLUDE_DIR)
