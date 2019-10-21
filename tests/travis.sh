@@ -7,10 +7,18 @@ rm result.log
 
 for dir in ${KEYEDGE_DIR}/tests/*/
 do
+	# Set up environment
+	cp Makefile-eapp ${dir}/eapp/Makefile
+	cp app.lds ${dir}/eapp/app.lds
+	cp Makefile-host ${dir}/host/Makefile
+	cp vault.sh ${dir}/vault.sh
+	cp keyedge_vault.sh ${dir}/keyedge_vault.sh
+	cp clean.sh ${dir}/clean.sh
+	
 	export TEST_FILE_NAME=$(basename ${dir})
 	cd ${dir}
 	# Try to build
-	./keyedge_vault.sh
+	./keyedge_vault.sh ${TEST_FILE_NAME}
 	# Launch QEMU test
 	cd ${KEYSTONE_SDK_DIR}/../
 	make image
@@ -19,7 +27,14 @@ do
 	cd ${dir}
 	${KEYEDGE_DIR}/tests/test.sh
 	./clean.sh
-	
+
+	rm ${dir}/eapp/Makefile
+	rm ${dir}/eapp/app.lds
+	rm ${dir}/host/Makefile
+	rm ${dir}/vault.sh
+	rm ${dir}/keyedge_vault.sh
+	rm ${dir}/clean.sh
+		
 	diff output.log expected
 	if [ $? -eq 0 ]
 	then

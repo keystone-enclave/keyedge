@@ -1,8 +1,5 @@
 #include "common_header.h"
 #include "ocalls_eapp.h"
-#include "eapp_utils.h"
-#include "edge_call.h"
-#include <syscall.h>
 
 int eapp_nested_struct() {
 	nest1 n;

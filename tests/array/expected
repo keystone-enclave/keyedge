@@ -1,7 +1,7 @@
 insmod keystone-driver.ko
 # ./array/array.ke
-Verifying archive integrity...     0%    71%  100%   All good.
-Uncompressing Keystone vault archive     0%    71%  100%  
+Verifying archive integrity... All good.
+Uncompressing Keystone vault archive
 Registering...
 Running the enclave...
 [PASS] Two dimensional array test succeeded.

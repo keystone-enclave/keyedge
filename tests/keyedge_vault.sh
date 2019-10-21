@@ -7,15 +7,10 @@ if [[ $KEYEDGE_DIR = "" ]]; then
 	exit 1
 fi
 
-if [[ $FLATCC_DIR = "" ]]; then
-	echo "FLATCC_DIR is not set"
-	exit 1
-fi
-
 $KEYEDGE_DIR/bin/keyedge keyedge/ocalls.h
 mv ocalls.fbs keyedge/
-$FLATCC_DIR/bin/flatcc -a keyedge/ocalls.fbs
+$KEYEDGE_DIR/flatcc/bin/flatcc -a keyedge/ocalls.fbs
 mv *.h keyedge/
 
-./vault.sh
+./vault.sh $1
 

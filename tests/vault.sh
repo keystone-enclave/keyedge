@@ -5,7 +5,7 @@ set -e
 ################################################################
 #                   Replace the variables                      #
 ################################################################
-NAME=nested_struct
+NAME=$1
 VAULT_DIR=`dirname $0`
 BUILD_COMMAND="make -C eapp && make -C host"
 OUTPUT_DIR=$KEYSTONE_SDK_DIR/../buildroot_overlay/root/$NAME
@@ -74,5 +74,5 @@ done
 popd
 
 # create vault archive & remove output files
-makeself "$OUTPUT_FILES_DIR" "$OUTPUT_DIR/$NAME.ke" "Keystone vault archive" $PACKAGE_SCRIPT --noprogress
+makeself --noprogress "$OUTPUT_FILES_DIR" "$OUTPUT_DIR/$NAME.ke" "Keystone vault archive" $PACKAGE_SCRIPT
 rm -rf $OUTPUT_FILES_DIR
