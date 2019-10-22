@@ -80,6 +80,7 @@ std::string emit_function_host(std::shared_ptr<function_information> f, size_t i
 		"\t} else {\n"
 		"\t\tedge_call -> return_data.call_status = CALL_STATUS_OK;\n"
 		"\t}\n"
+		"$(RELEASE_CONST)"
 		"\treturn;\n"
 		"}", {
 			{"$(NAME)", f -> name},
@@ -163,6 +164,18 @@ std::string emit_function_host(std::shared_ptr<function_information> f, size_t i
 								*f -> return_type, indent + 1)},
 							{"$(NAME)", f -> name}
 						}, indent);
+				}
+				return ret;
+			}()},
+			{"$(RELEASE_CONST)", [&]() -> std::string {
+				std::string ret;
+				for (size_t i = 0; i < f -> arguments.size(); ++i) {
+					if (f -> arguments[i] -> type.is_const) {
+						ret += emit(
+							"\tfree($(ARGUMENT_NAME));\n", {
+								{"$(ARGUMENT_NAME)", f -> arguments[i] -> name}
+							}, indent);
+					}
 				}
 				return ret;
 			}()}

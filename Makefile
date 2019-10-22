@@ -26,15 +26,14 @@ FLATCC_CC_OPTION = -I$(FLATCC_DIR)/include -Wall -Werror
 FLATCC_OBJECTS = builder.o emitter.o refmap.o verifier.o
 FLATCC_LIST = $(addprefix $(LIB_DIR)/, $(FLATCC_OBJECTS))
 
-all : directory keyedge flatcc
+all : keyedge flatcc
 
-directory :
+keyedge : keyedge_directory $(BIN_DIR)/keyedge
+
+keyedge_directory :
 	mkdir -p $(BIN_DIR)/information
 	mkdir -p $(BIN_DIR)/emitter
 	mkdir -p $(BIN_DIR)
-	mkdir -p $(LIB_DIR)
-	
-keyedge : $(BIN_DIR)/keyedge
 
 -include $(KEYEDGE_LIST:.o=.d)
 
@@ -53,7 +52,10 @@ $(BIN_DIR)/%.o : $(SRC_DIR)/%.cpp $(INCLUDE_DIR)/index.h
 	$(CC) $(CC_OPTION) -c $< -o $@
 	$(CC) $(CC_OPTION) -MM $< > $(@:.o=.d)
 	
-flatcc : build_flatcc $(LIB_DIR)/flatccrt.a
+flatcc : lib_directory build_flatcc $(LIB_DIR)/flatccrt.a
+
+lib_directory :	
+	mkdir -p $(LIB_DIR)
 
 build_flatcc :
 	cd flatcc && ./scripts/initbuild.sh make

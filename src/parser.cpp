@@ -10,50 +10,41 @@ namespace std {
 
 }
 
+void add_primitive_type(const std::string& type, const std::string& flatcc_type) {
+	type_lookup[type] = std::shared_ptr<type_information>(
+		new primitive_type_information(type, flatcc_type));
+	type_lookup[std::string("const ") + type] = std::shared_ptr<type_information>(
+		new primitive_type_information(type, flatcc_type));
+}
+
 void initialize_primitive_types() {
-	type_lookup["void"] = std::shared_ptr<type_information>(
-		new primitive_type_information("void", "int8"));
-	type_lookup["char"] = std::shared_ptr<type_information>(
-		new primitive_type_information("char", "int8"));
-	type_lookup["signed char"] = std::shared_ptr<type_information>(
-		new primitive_type_information("signed char", "int8"));
-	type_lookup["unsigned char"] = std::shared_ptr<type_information>(
-		new primitive_type_information("unsigned char", "uint8"));
-	type_lookup["short"] = std::shared_ptr<type_information>(
-		new primitive_type_information("short", "int16"));
-	type_lookup["signed short"] = std::shared_ptr<type_information>(
-		new primitive_type_information("signed short", "int16"));
-	type_lookup["unsigned short"] = std::shared_ptr<type_information>(
-		new primitive_type_information("unsigned short", "uint16"));
-	type_lookup["int"] = std::shared_ptr<type_information>(
-		new primitive_type_information("int", "int32"));
-	type_lookup["signed int"] = std::shared_ptr<type_information>(
-		new primitive_type_information("signed int", "int32"));
-	type_lookup["unsigned int"] = std::shared_ptr<type_information>(
-		new primitive_type_information("unsigned int", "uint32"));
-	type_lookup["long"] = std::shared_ptr<type_information>(
-		new primitive_type_information("long", "int32"));
-	type_lookup["signed long"] = std::shared_ptr<type_information>(
-		new primitive_type_information("signed long", "int32"));
-	type_lookup["unsigned long"] = std::shared_ptr<type_information>(
-		new primitive_type_information("unsigned long", "uint32"));
-	type_lookup["long long"] = std::shared_ptr<type_information>(
-		new primitive_type_information("long long", "int64"));
-	type_lookup["signed long long"] = std::shared_ptr<type_information>(
-		new primitive_type_information("signed long long", "int64"));
-	type_lookup["unsigned long long"] = std::shared_ptr<type_information>(
-		new primitive_type_information("unsigned long long", "uint64"));
-	// TODO: add more primitive types
+	add_primitive_type("void", "int8");
+	add_primitive_type("char", "int8");
+	add_primitive_type("signed char", "int8");
+	add_primitive_type("unsigned char", "uint8");
+	add_primitive_type("short", "int16");
+	add_primitive_type("signed short", "int16");
+	add_primitive_type("unsigned short", "uint16");
+	add_primitive_type("int", "int32");
+	add_primitive_type("signed int", "int32");
+	add_primitive_type("unsigned int", "uint32");
+	add_primitive_type("long", "int32");
+	add_primitive_type("signed long", "int32");
+	add_primitive_type("unsigned long", "uint32");
+	add_primitive_type("long long", "int64");
+	add_primitive_type("signed long long", "int64");
+	add_primitive_type("unsigned long long", "uint64");
 }
 
 type_indicator parse_type(CXType type) {
 	type = clang_getCanonicalType(type);
 	// pointer detection
 	if (type.kind == CXType_Pointer) {
+		type_indicator pointee = parse_type(clang_getPointeeType(type));
 		type_pool.push_back(std::shared_ptr<pointer_information>(
-			new pointer_information(parse_type(clang_getPointeeType(type)))));
+			new pointer_information(pointee)));
 		pointer_pool.push_back(std::dynamic_pointer_cast<pointer_information>(type_pool.back()));
-		return type_indicator(type_pool.size() - 1);
+		return type_indicator(type_pool.size() - 1, pointee.is_const);
 	}
 	// array detection
 	if (clang_getArraySize(type) >= 0) {
@@ -66,9 +57,10 @@ type_indicator parse_type(CXType type) {
 		type_pool.push_back(std::shared_ptr<array_information>(
 			new array_information(std::vector<std::string>(1, std::to_string(clang_getArraySize(type))),
 				indicator)));
-		return type_indicator(type_pool.size() - 1);
+		return type_indicator(type_pool.size() - 1, indicator.is_const);
 	}
 	type_indicator parsed = type_indicator(std::to_string(clang_getTypeSpelling(type)));
+	parsed.is_const = clang_isConstQualifiedType(type);
 	return parsed;
 }
 
@@ -161,6 +153,7 @@ CXChildVisitResult parse_statement(CXCursor cursor, CXCursor parent, CXClientDat
 		struct_pool.push_back(str);
 		type_lookup[str -> name] = str;
 		type_lookup[std::string("struct ") + str -> name] = str;
+		type_lookup[std::string("const struct ") + str -> name] = str;
 	} else if (clang_getCursorKind(cursor) == CXCursor_FunctionDecl) {
 		if (clang_Location_isFromMainFile(clang_getCursorLocation(cursor))) {
 			std::shared_ptr<function_information> function = parse_function(cursor);

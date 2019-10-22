@@ -82,6 +82,7 @@ namespace __emit_eapp {
 				{"$(FUNCTION_ARGUMENTS)", [&]() -> std::string {
 					std::string ret = "(";
 					for (size_t i = 0; i < f -> arguments.size(); ++i) {
+						ret += (f -> arguments[i] -> type.is_const ? "const " : ""); 
 						ret += (*f -> arguments[i] -> type) -> str(f -> arguments[i] -> name);
 						if (i + 1 < f -> arguments.size()) ret += ", ";
 					}

@@ -1,6 +1,6 @@
 #include "ocalls_host.h"
 
-int print_string(char* msg) {
+int print_string(const char* msg) {
 	int ret = printf("%s\n", msg);
 	fflush(stdout);
 	return ret;
