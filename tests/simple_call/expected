@@ -1,0 +1,8 @@
+insmod keystone-driver.ko
+# ./simple_call/simple_call.ke
+Verifying archive integrity... All good.
+Uncompressing Keystone vault archive
+Registering...
+Running the enclave...
+[PASS] Simple call test succeeded.
+# 

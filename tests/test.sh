@@ -1,5 +1,7 @@
 #!/usr/bin/expect
 
+set filename [lindex $argv 0]
+
 set timeout 60
 spawn ssh -o "UserKnownHostsFile /dev/null" root@localhost -p $::env(HOST_PORT)
 expect "yes/no" {
@@ -9,7 +11,7 @@ expect "yes/no" {
   
 expect "# " { send "insmod keystone-driver.ko\r" }
 log_file -noappend output.log
-expect "# " { send "./$::env(TEST_FILE_NAME)/$::env(TEST_FILE_NAME).ke\r" }
+expect "# " { send "./$filename/$filename.ke\r" }
 
 expect "# " {
   log_file
