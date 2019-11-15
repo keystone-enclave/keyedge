@@ -13,7 +13,7 @@ CCFLAGS = -I$(SDK_INCLUDE_HOST_DIR) -I$(SDK_INCLUDE_EDGE_DIR) -I$(FLATCC_INCLUDE
 LDFLAGS = -L$(SDK_LIB_DIR) -L$(KEYEDGE_DIR)/lib
 
 HOST = host
-OBJS = $(HOST).o
+OBJS = $(HOST).o host_launcher.o
 
 all: $(HOST)
 

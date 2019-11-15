@@ -2,6 +2,7 @@ rm eapp/eapp
 rm eapp/eapp.o
 rm host/host
 rm host/host.o
+rm host/host_launcher.o
 rm keyedge/flatbuffers_common_builder.h
 rm keyedge/flatbuffers_common_reader.h
 rm keyedge/ocalls.fbs
