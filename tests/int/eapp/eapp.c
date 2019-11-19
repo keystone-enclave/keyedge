@@ -2,7 +2,9 @@
 #include "ocalls_eapp.h"
 
 void EAPP_ENTRY eapp_entry() {
-	simple_call(42);
+	for (int i = 0; i < TEST_SIZE; ++i) {
+		int_call(test[i]);
+	}
 	EAPP_RETURN(0);
 }
 

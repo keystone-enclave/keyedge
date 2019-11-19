@@ -4,5 +4,10 @@ Verifying archive integrity... All good.
 Uncompressing Keystone vault archive
 Registering...
 Running the enclave...
-[PASS] Simple call test succeeded.
+[PASS] Test 0 passed. Expecting -2147483648 and received -2147483648.
+[PASS] Test 1 passed. Expecting 2147483647 and received 2147483647.
+[PASS] Test 2 passed. Expecting 0 and received 0.
+[PASS] Test 3 passed. Expecting -1 and received -1.
+[PASS] Test 4 passed. Expecting 42 and received 42.
+[PASS] Test succeeded.
 # 
