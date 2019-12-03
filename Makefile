@@ -14,7 +14,7 @@ KEYEDGE_INFORMATION_OBJECTS = type_information.o type_indicator.o element_inform
 function_information.o primitive_type_information.o struct_information.o \
 array_information.o pointer_information.o global.o
 KEYEDGE_EMITTER_OBJECTS = basic.o array_serialization.o struct_serialization.o \
-pointer_serialization.o serialization.o emit_fbs.o emit_common.o emit_eapp.o emit_host.o
+pointer_serialization.o serialization.o emit_fbs.o emit_common.o emit_eapp.o emit_host.o emit_ihost.o
 KEYEDGE_OBJECTS = parser.o main.o \
 $(addprefix information/, $(KEYEDGE_INFORMATION_OBJECTS)) \
 $(addprefix emitter/, $(KEYEDGE_EMITTER_OBJECTS))

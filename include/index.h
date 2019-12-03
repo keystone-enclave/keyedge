@@ -50,6 +50,7 @@
 #include "emitter/emit_common.h"
 #include "emitter/emit_eapp.h"
 #include "emitter/emit_host.h"
+#include "emitter/emit_ihost.h"
 
 #endif
 
