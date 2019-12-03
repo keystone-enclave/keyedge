@@ -103,6 +103,25 @@ std::shared_ptr<function_information> parse_function(CXCursor cursor) {
 		}
 		return CXChildVisit_Continue;
 	}, &parsed -> arguments);
+	// buffer size
+	parsed -> buffer_size = "1024";
+	clang_visitChildren(cursor, [](CXCursor cursor, CXCursor parent, CXClientData client_data) -> CXChildVisitResult{
+		if (clang_getCursorKind(cursor) == CXCursor_AnnotateAttr) {
+			if (std::to_string(clang_getCursorSpelling(cursor)).substr(0, ATTRIBUTE_BUFFER_PREFIX.size()) == ATTRIBUTE_BUFFER_PREFIX) {
+				*(std::string *)client_data = std::to_string(clang_getCursorSpelling(cursor)).substr(ATTRIBUTE_BUFFER_PREFIX.size());
+			}
+		}
+		return CXChildVisit_Continue;
+	}, &parsed -> buffer_size);
+	// attributes
+	clang_visitChildren(cursor, [](CXCursor cursor, CXCursor parent, CXClientData client_data) -> CXChildVisitResult{
+		if (clang_getCursorKind(cursor) == CXCursor_AnnotateAttr) {
+			if (std::to_string(clang_getCursorSpelling(cursor)) == ATTRIBUTE_INVERSE_STR) {
+				*(int *)client_data |= ATTRIBUTE_INVERSE;
+			}
+		}
+		return CXChildVisit_Continue;
+	}, &parsed -> attr_flag);
 	// handling vectors
 	std::vector <size_t> vectors;
 	for (size_t i = 0; i < parsed -> arguments.size(); ++i) {

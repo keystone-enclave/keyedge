@@ -70,9 +70,9 @@ namespace __emit_eapp {
 			"\tsize_t __size;\n"
 			"\t__buf = (void *) flatcc_builder_finalize_buffer(&builder, &__size);\n"
 			// get some space for the return value
-			"\tchar return_address[1024];\n"
+			"\tchar return_address[$(BUFFER_SIZE)];\n"
 			// perform the ocall
-			"\tocall(__function_$(NAME), __buf, __size, return_address, 1024);\n"
+			"\tocall(__function_$(NAME), __buf, __size, return_address, $(BUFFER_SIZE));\n"
 			// clean-up
 			"\tfree(__buf);\n"
 			"\tflatcc_builder_clear(&builder);\n"
@@ -136,6 +136,7 @@ namespace __emit_eapp {
 				}
 				return ret;
 			}()},
+			{"$(BUFFER_SIZE)", f -> buffer_size},
 			{"$(RETURN)", [&]() -> std::string {
 				std::string ret;
 				if ((*f -> return_type) -> str() != "void") {
