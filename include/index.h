@@ -48,9 +48,10 @@
 #include "emitter/serialization.h"
 #include "emitter/emit_fbs.h"
 #include "emitter/emit_common.h"
+#include "emitter/emit_caller.h"
+#include "emitter/emit_callee.h"
 #include "emitter/emit_eapp.h"
 #include "emitter/emit_host.h"
-#include "emitter/emit_ihost.h"
 
 #endif
 
