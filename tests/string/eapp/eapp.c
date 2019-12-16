@@ -1,5 +1,4 @@
-#include "common_header.h"
-#include "ocalls_eapp.h"
+#include "eapp_header.h"
 
 char test[TEST_SIZE][512] = {
 	"Hello World!",

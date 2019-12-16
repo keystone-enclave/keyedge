@@ -1,5 +1,4 @@
-#include "common_header.h"
-#include "ocalls_eapp.h"
+#include "eapp_header.h"
 
 int eapp_two_dimensional_array() {
 	int arr[2][3];

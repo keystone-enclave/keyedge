@@ -21,7 +21,7 @@ SECTIONS
   .malloc_zone :
   {
     __malloc_start = .;
-    . = . + 32768;
+    . = . + 131072;
     __malloc_zone_stop = .;
   }
   _end = .;
