@@ -1,4 +1,8 @@
-#include "ocalls_host.h"
+#include <keystone.h>
+#include <edge_call.h>
+#include "ocalls.h"
+
+void register_functions();
 
 Keystone enclave;
 

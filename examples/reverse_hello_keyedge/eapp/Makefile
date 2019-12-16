@@ -11,17 +11,16 @@ FLATCC_INCLUDE_DIR = $(KEYEDGE_DIR)/flatcc/include
 
 APP_LDS = app.lds
 
-CFLAGS += -g -I$(SDK_INCLUDE_APP_DIR) -I$(SDK_INCLUDE_EDGE_DIR) -I$(FLATCC_INCLUDE_DIR) -I$(KEYEDGE_INCLUDE_DIR) -I$(PROJECT_KEYEDGE_INClUDE_DIR) -Wall -Werror
-LDFLAGS = -g -static -L$(SDK_LIB_DIR) -L$(KEYEDGE_DIR)/lib
+CFLAGS += -I$(SDK_INCLUDE_APP_DIR) -I$(SDK_INCLUDE_EDGE_DIR) -I$(FLATCC_INCLUDE_DIR) -I$(KEYEDGE_INCLUDE_DIR) -I$(PROJECT_KEYEDGE_INClUDE_DIR) -Wall -Werror
+LDFLAGS = -static -L$(SDK_LIB_DIR) -L$(KEYEDGE_DIR)/lib
 
-EAPP = eapp
-OBJS = $(EAPP).o
+OBJS = eapp.o ocalls_eapp.o
 
-all: $(EAPP)
+all: eapp
 
-$(EAPP): $(OBJS)
+eapp: $(OBJS)
 	$(LD) $(LDFLAGS) -T $(APP_LDS) \
-	-o $(EAPP) \
+	-o eapp \
 	$(OBJS) \
 	$(SDK_LIB_DIR)/libkeystone-eapp.a \
 	$(SDK_LIB_DIR)/libkeystone-edge.a \

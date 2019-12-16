@@ -8,7 +8,7 @@ std::string emit_header_host(size_t indent = 0) {
 		"#include \"ocalls_common.h\"\n"
 		"#include \"ocalls_builder.h\"\n"
 		"#include \"ocalls_reader.h\"\n"
-		"extern Keystone enclave;", {}, indent);
+		"extern Keystone enclave;\n", {}, indent);
 }
 
 std::string emit_end_host(size_t indent = 0) {

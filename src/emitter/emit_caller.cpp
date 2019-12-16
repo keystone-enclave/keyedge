@@ -120,9 +120,9 @@ std::string emit_function_caller(std::shared_ptr<function_information> f, size_t
 		{"$(ROUTINE)", [&]() -> std::string {
 			if (f -> attr_flag & ATTRIBUTE_INVERSE) {
 				return emit(
-					"\t*(int*) enclave.getSharedBuffer() = sizeof(int) + __size;\n"
-					"\t*(((int*) enclave.getSharedBuffer()) + 1) = __function_$(NAME);\n"
-					"\tmemcpy((char*) enclave.getSharedBuffer() + 2 * sizeof(int), (char*) __buf, __size);\n"
+					"\t*(int*) _shared_start = sizeof(int) + __size;\n"
+					"\t*(((int*) _shared_start) + 1) = __function_$(NAME);\n"
+					"\tmemcpy((char*) _shared_start + 2 * sizeof(int), (char*) __buf, __size);\n"
 					"\tenclave.resume();\n", {
 						{"$(NAME)", f -> name}
 					}, indent);
@@ -140,11 +140,11 @@ std::string emit_function_caller(std::shared_ptr<function_information> f, size_t
 			if ((*f -> return_type) -> str() != "void") {
 				if (f -> attr_flag & ATTRIBUTE_INVERSE) {
 					std::string serialized_return = emit(
-						"__ocall_wrapper_$(NAME)___return_value(__ocall_wrapper_$(NAME)_as_root((char*) enclave.getSharedBuffer() + __result -> call_arg_offset))", {
+						"__ocall_wrapper_$(NAME)___return_value(__ocall_wrapper_$(NAME)_as_root((char*) _shared_start + __result -> call_arg_offset))", {
 							{"$(NAME)", f -> name}
 						});
 					ret = emit(
-						"\tedge_call* __result = (edge_call*) enclave.getSharedBuffer();\n"
+						"\tedge_call* __result = (edge_call*) _shared_start;\n"
 						"\t$(DECLARE_RETURN);\n"
 						"\t$(DESERIALIZE_RETURN);\n"
 						"\treturn __return_value;\n", {

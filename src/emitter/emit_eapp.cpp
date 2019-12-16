@@ -9,10 +9,11 @@ std::string emit_header_eapp(size_t indent = 0) {
 		"#include \"string.h\"\n"
 		"#include \"edge_call.h\"\n"
 		"#include \"h2ecall.h\"\n"
+		"#include \"common_header.h\"\n"
 		"#include \"ocalls.h\"\n"
 		"#include \"ocalls_common.h\"\n"
 		"#include \"ocalls_builder.h\"\n"
-		"#include \"ocalls_reader.h\"", {}, indent);
+		"#include \"ocalls_reader.h\"\n", {}, indent);
 }
 
 std::string emit_end_eapp(size_t indent = 0) {

@@ -32,8 +32,8 @@ int main(int argc, char* argv[]) {
 
 	// emit output
 	std::ofstream fcommon("ocalls_common.h");
-	std::ofstream feapp("ocalls_eapp.h");
-	std::ofstream fhost("ocalls_host.h");
+	std::ofstream feapp("ocalls_eapp.c");
+	std::ofstream fhost("ocalls_host.cpp");
 	std::ofstream ffbs("ocalls.fbs");
 	fcommon << emit_common();
 	feapp << emit_eapp();

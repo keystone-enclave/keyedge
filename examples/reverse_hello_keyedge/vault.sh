@@ -5,7 +5,7 @@ set -e
 ################################################################
 #                   Replace the variables                      #
 ################################################################
-NAME=reverse_hello_keyedge
+NAME=blank
 VAULT_DIR=`dirname $0`
 BUILD_COMMAND="make -C eapp && make -C host"
 OUTPUT_DIR=$KEYSTONE_SDK_DIR/../buildroot_overlay/root/$NAME
@@ -75,4 +75,4 @@ popd
 
 # create vault archive & remove output files
 makeself "$OUTPUT_FILES_DIR" "$OUTPUT_DIR/$NAME.ke" "Keystone vault archive" $PACKAGE_SCRIPT
-# rm -rf $OUTPUT_FILES_DIR
+rm -rf $OUTPUT_FILES_DIR
