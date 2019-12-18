@@ -148,6 +148,14 @@ demonstrated in the tutorial with ``keyedge_str``, a modifier that
 tells Keyedge to serialize the parameter as a C-styled string. A list
 of currently supported modifiers is given below:
 
+keyedge_inverse
+^^^^^^^^^^^^^^^
+
+This modifier, when added to a function declaration, reverses the
+call direction, i.e. the host can now make this call and the enclave
+should implement it. Check ``reverse_hello_keyedge`` in the
+``examples`` folder to see how it is typically done.
+ 
 keyedge_size
 ^^^^^^^^^^^^
 
