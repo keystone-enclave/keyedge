@@ -4,8 +4,9 @@
 
 void register_functions();
 
+Keystone enclave;
+
 int main(int argc, char** argv) {
-	Keystone enclave;
 	Params params;
 
 	params.setFreeMemSize(2 * 1024 * 1024);
@@ -17,10 +18,6 @@ int main(int argc, char** argv) {
 	
 	printf("Registering...\n");
 	fflush(stdout);
-	
-	/* We must specifically register functions we want to export to the
-		enclave. */
-	register_functions();
 
 	edge_call_init_internals((uintptr_t)enclave.getSharedBuffer(),
 		enclave.getSharedBufferSize());
@@ -29,6 +26,7 @@ int main(int argc, char** argv) {
 	fflush(stdout);
 
 	enclave.run();
+	printf ("%s\n", get_msg().content);
 
 	return 0;
 }

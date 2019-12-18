@@ -1,6 +1,14 @@
 #include <cstdio>
 #include "ocalls.h"
 
+const int test[TEST_SIZE] = {
+	INT_MIN,
+	INT_MAX,
+	0,
+	-1,
+	42
+};
+
 int test_index = 0;
 
 void int_call(int val) {

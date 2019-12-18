@@ -7,7 +7,17 @@
 
 void register_inverse_functions();
 
+char* str = "Hello Keyedge!";
+
+msg get_msg() {
+	msg ret;
+	ret.content = str;
+	ret.size = strlen(str) + 1;
+	return ret;
+}
+
 void EAPP_ENTRY eapp_entry() {
-	EAPP_RETURN(0);
+	register_inverse_functions();
+	receive_calls(h2ecall_dispatch);
 }
 

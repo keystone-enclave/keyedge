@@ -1,34 +1,40 @@
 #include "index.h"
 
-// the variable name of flatcc reference
-std::string flatcc_reference_var(size_t indent, std::string member_name) {
-	return emit("__$(INDENT)_$(MEMBER_NAME)", {
-		{"$(INDENT)", std::to_string(indent)},
-		{"$(MEMBER_NAME)", member_name}
-	});
+namespace __struct_serialization {
+
+	// the variable name of flatcc reference
+	std::string flatcc_reference_var(size_t indent, std::string member_name) {
+		return emit("__$(INDENT)_$(MEMBER_NAME)", {
+			{"$(INDENT)", std::to_string(indent)},
+			{"$(MEMBER_NAME)", member_name}
+		});
+	}
+
+	std::string emit_serialize_member(const std::string& name, std::shared_ptr<element_information> member,
+		size_t indent) {
+		return emit(
+			"$(FLATCC_REFERENCE) $(FLATCC_REFERENCE_VAR);\n"
+			"$(SERIALIZE_MEMBER)\n", {
+				// the reference used in flatcc
+				{"$(FLATCC_REFERENCE)", (*member -> type) -> flatcc_reference()},
+				{"$(FLATCC_REFERENCE_VAR)", flatcc_reference_var(indent, member -> name)},
+				// the serialization of the member
+				{"$(SERIALIZE_MEMBER)", emit_serialize(
+					name + "." + member -> name, flatcc_reference_var(indent, member -> name),
+					*member -> type, indent)}
+			}, indent);
+	}
+
+	std::string emit_deserialize_member(const std::string& name, const std::string& serialized_name, std::shared_ptr<struct_information> type,
+		std::shared_ptr<element_information> member, size_t indent) {
+		return emit("$(EMIT)\n", {{"$(EMIT)", emit_deserialize(name + "." + member -> name,
+			type -> name + "_" + member -> name + "(" + serialized_name + ")",
+			*member -> type, indent)}}, indent);
+	}
+
 }
 
-std::string emit_serialize_member(const std::string& name, std::shared_ptr<element_information> member,
-	size_t indent) {
-	return emit(
-		"$(FLATCC_REFERENCE) $(FLATCC_REFERENCE_VAR);\n"
-		"$(SERIALIZE_MEMBER)\n", {
-			// the reference used in flatcc
-			{"$(FLATCC_REFERENCE)", (*member -> type) -> flatcc_reference()},
-			{"$(FLATCC_REFERENCE_VAR)", flatcc_reference_var(indent, member -> name)},
-			// the serialization of the member
-			{"$(SERIALIZE_MEMBER)", emit_serialize(
-				name + "." + member -> name, flatcc_reference_var(indent, member -> name),
-				*member -> type, indent)}
-		}, indent);
-}
-
-std::string emit_deserialize_member(const std::string& name, const std::string& serialized_name, std::shared_ptr<struct_information> type,
-	std::shared_ptr<element_information> member, size_t indent) {
-	return emit("$(EMIT)\n", {{"$(EMIT)", emit_deserialize(name + "." + member -> name,
-		type -> name + "_" + member -> name + "(" + serialized_name + ")",
-		*member -> type, indent)}}, indent);
-}
+using namespace __struct_serialization;
 
 std::string emit_serialize_struct(const std::string& name, const std::string& serialized_name,
 	std::shared_ptr<struct_information> type, size_t indent) {

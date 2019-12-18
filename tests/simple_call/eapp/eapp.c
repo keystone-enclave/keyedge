@@ -1,5 +1,4 @@
-#include "common_header.h"
-#include "ocalls_eapp.h"
+#include "eapp_header.h"
 
 void EAPP_ENTRY eapp_entry() {
 	simple_call();

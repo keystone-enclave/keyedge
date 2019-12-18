@@ -5,9 +5,3 @@
 #include <syscall.h>
 #include "ocalls.h"
 
-void register_inverse_functions();
-
-void EAPP_ENTRY eapp_entry() {
-	EAPP_RETURN(0);
-}
-
